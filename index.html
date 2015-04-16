@@ -3,48 +3,53 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<meta charset="utf-8">
-		<title>Blog Template</title>
+		<title>FitnessBuddy</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootswatch/3.3.0/journal/bootstrap.min.css">
-        <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.min.js"></script>
+        <script src='https://cdn.firebase.com/js/client/2.2.2/firebase.js'></script>
         <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src="https://cdn.firebase.com/libs/angularfire/1.0.0/angularfire.min.js"></script>
 	</head>
 	<body>
     <script type="text/javascript">
-        var myDataRef = new Firebase('https://sweltering-heat-7043.firebaseio.com/');
-        function newEvent(){
+    var app = angular.module('fitnessBuddy',['firebase'])
+    app.controller('mainController', function($scope, $firebase){
+        var myDataRef = new Firebase('https://sweltering-heat-7043.firebaseio.com/events');
+        $scope.newEvent= function(){
             var eventname = $('#eventName').val();
             var eventtext = $('#eventDesc').val();
-            myDataRef.push({name: eventname, text: eventtext});
+            var eventdate = $('#eventDate').val();
+            myDataRef.push({name: eventname, text: eventtext, date: eventdate});
             $('#eventName').val('');
             $('#eventDesc').val('');
+            $('#eventDate').val('');
         }
         myDataRef.on('child_added', function(snapshot) {
             var message = snapshot.val();
-            displayChatMessage(message.name, message.text);
+            displayChatMessage(message.name, message.text, message.date);
         });
-      function displayChatMessage(name, text) {
-        $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
+      function displayChatMessage(name, text, date) {
+        $('<div/>').text(text+ ' on the '+date).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
         $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
       };
+    });
     </script>
 
-<div id="masthead">  
-  <div class="container">
-    <div class="row">
-      <div class="col-md-7">
-        <h1>Blog
-          <p class="lead">Catchy Subtitle Here</p>
-        </h1>
-      </div>
-        </div><!-- /cont -->
-</div>
-<div class="container">
-    <input type='text' id='eventName' placeholder='New Event name' />
-    <input type='text' id='eventDesc' placeholder='New Event description' />
-    <input type='submit' value="submit" onclick="newEvent();"/>    
-</div>
-<div id="messagesDiv"><div/>
-	</body>
+    <div class="container" ng-app="fitnessBuddy" ng-controller="mainController">
+        <input type='text' id='eventName' placeholder='New Event name' />
+        <input type='text' id='eventDesc' placeholder='New Event description' />
+        <input type='date' id='eventDate'>
+        <input type='submit' value="submit" ng-click="newEvent()"/>  
+        <div class="page-header text-center">
+            <h1>Events</h1>
+        </div>
+        <div class="row events">
+            <div id="messagesDiv"><div/>
+        </div>
+
+          
+    </div>
+</body>
 </html>
