@@ -24,13 +24,14 @@
             $scope.events=$firebaseArray(eventRef);
             $scope.newEvent= function(){
                 var timestamp=new Date().valueOf();
-                var itemRef=new Firebase(FIREBASE_URL+timestamp);
-                itemRef.set({
+                //var itemRef=new Firebase(FIREBASE_URL+timestamp);
+                //itemRef.set({s
+                //});
+                $scope.events.$add({
                     name:$scope.eventname,
-                    text:$scope.eventdesc,
-                    date:$scope.eventdate
+                    text:$scope.eventdescs
+                   // date:$scope.eventdate
                 });
-                $scope.events.$add(itemRef);
                 $scope.eventname='';
                 $scope.eventtext='';
                 $scope.eventdate='';
@@ -55,13 +56,13 @@
             <div class="page-header text-center">
                 <h1>Events</h1>
             </div>
-            <!-- <div ng-repeat="event list" class="list-group-item row">
+            <div ng-repeat="event list" class="list-group-item row">
                 <div class="col-md-6">
-                    <span>{{event.name}}</span>
-                    <small class="text-warning">[{{event.text}}]</small>
-                    <span>{{event.date}}</span>
+                    <span>{{events.name}}</span>
+                    <small class="text-warning">[{{eventss.text}}]</small>
+                    <!--<span>{{event.date}}</span>-->
                 </div>
-            </div> -->
+            </div>
         </div>
 </body>
 </html>
