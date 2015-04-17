@@ -14,53 +14,54 @@
         <script src="https://cdn.firebase.com/libs/angularfire/1.0.0/angularfire.min.js"></script>
         <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js"></script>
-
-
 	</head>
-	<body>
-    <script type="text/javascript">
-    var app = angular.module('fitnessBuddy',['firebase'])
-    app.controller('mainController', function($scope, $firebase){
-        var myDataRef = new Firebase('https://sweltering-heat-7043.firebaseio.com/events');
-        $scope.newEvent= function(){
-            var eventname = $('#eventName').val();
-            var eventtext = $('#eventDesc').val();
-            var eventdate = $('#eventDate').val();
-            myDataRef.push({name: eventname, text: eventtext, date: eventdate});
-            $('#eventName').val('');
-            $('#eventDesc').val('');
-            $('#eventDate').val('');
-        }
-        myDataRef.on('child_added', function(snapshot) {
-            var message = snapshot.val();
-            displayChatMessage(message.name, message.text, message.date);
-        });
-      function displayChatMessage(name, text, date) {
-        $('<div/>').text(text+ ' on the '+date).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
-        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
-      };
-      $(function() {
-        $( "#eventDate" ).datetimepicker({
-            controlType: "select",
-            timeFormat: "HH:mm"
-        });
-        });
-    });
+	<script type="text/javascript">
+        var app=angular.module('fitnessBuddy',['firebase']);
+        app.controller('EventListCtrl',["$scope", "$firebaseArray",
+            function($scope,$firebaseArray){
+            var FIREBASE_URL= 'https://sweltering-heat-7043.firebaseio.com/event2'
+            var eventRef = new Firebase(FIREBASE_URL);
+            $scope.events=$firebaseArray(eventRef);
+            $scope.newEvent= function(){
+                var timestamp=new Date().valueOf();
+                var itemRef=new Firebase(FIREBASE_URL+timestamp);
+                itemRef.set({
+                    name:$scope.eventname,
+                    text:$scope.eventdesc,
+                    date:$scope.eventdate
+                });
+                $scope.events.$add(itemRef);
+                $scope.eventname='';
+                $scope.eventtext='';
+                $scope.eventdate='';
+            }
+            $(function() {
+                var nowDate = new Date()
+                $( "#eventdate" ).datetimepicker({
+                    controlType:'select',
+                    format: "HH:mm",
+                    // stepMinute:30,
+                    minDate: nowDate
+                });
+            });     
+        }]);
     </script>
-
-    <div class="container" ng-app="fitnessBuddy" ng-controller="mainController">
-        <input type='text' id='eventName' placeholder='New Event name' />
-        <input type='text' id='eventDesc' placeholder='New Event description' />
-        <input type='text' id='eventDate'>
-        <input type='submit' value="submit" ng-click="newEvent()"/>  
-        <div class="page-header text-center">
-            <h1>Events</h1>
+    <body ng-controller="EventListCtrl" class="container" ng-app='fitnessBuddy'>
+        <div class="container">
+            <input type='text' ng-model='eventname' placeholder='New Event name' />
+            <input type='text' ng-model='eventdesc' placeholder='New Event description' />
+            <input type='text' ng-model='eventdate' id='eventdate' placeholder='Select date'>
+            <input type='submit' value="submit" ng-click="newEvent()"/>  
+            <div class="page-header text-center">
+                <h1>Events</h1>
+            </div>
+            <!-- <div ng-repeat="event list" class="list-group-item row">
+                <div class="col-md-6">
+                    <span>{{event.name}}</span>
+                    <small class="text-warning">[{{event.text}}]</small>
+                    <span>{{event.date}}</span>
+                </div>
+            </div> -->
         </div>
-        <div class="row events">
-            <div id="messagesDiv"><div/>
-        </div>
-
-          
-    </div>
 </body>
 </html>
