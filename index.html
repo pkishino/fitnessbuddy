@@ -5,64 +5,96 @@
 		<meta charset="utf-8">
 		<title>FitnessBuddy</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.0/journal/bootstrap.min.css">
-        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.0/journal/bootstrap.min.css"/>
+        <link rel="stylesheet" href="https://rawgit.com/jdewit/ez-dropdown/master/dist/ez-dropdown.min.css"/>
+        <link rel="stylesheet" href="css/ez-datetime.min.css"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.min.js"></script>
         <script src='https://cdn.firebase.com/js/client/2.2.2/firebase.js'></script>
         <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script src="https://cdn.firebase.com/libs/angularfire/1.0.0/angularfire.min.js"></script>
-        <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.1/ui-bootstrap.min.js"></script>
+        <script src="js/ez-datetime.min.js"></script>
+        <script src="js/ez-datetime-tpl.js"></script>
 	</head>
 	<script type="text/javascript">
-        var app=angular.module('fitnessBuddy',['firebase']);
+        var app=angular.module('fitnessBuddy',['firebase','ui.bootstrap','ez.datetime']);
         app.controller('EventListCtrl',["$scope", "$firebaseArray",
             function($scope,$firebaseArray){
             var FIREBASE_URL= 'https://sweltering-heat-7043.firebaseio.com/event2'
             var eventRef = new Firebase(FIREBASE_URL);
-            $scope.events=$firebaseArray(eventRef);
+            $scope.eventlist=$firebaseArray(eventRef);
+            // create a query for the most recent 25 messages on the server
+            //var query = messagesRef.orderByChild("timestamp").limitToLast(25);
+            // the $firebaseArray service properly handles Firebase queries as well
+            //$scope.filteredMessages = $firebaseArray(query);
             $scope.newEvent= function(){
-                var timestamp=new Date().valueOf();
-                //var itemRef=new Firebase(FIREBASE_URL+timestamp);
-                //itemRef.set({s
-                //});
-                $scope.events.$add({
-                    name:$scope.eventname,
-                    text:$scope.eventdescs
-                   // date:$scope.eventdate
+                $scope.eventlist.$add({
+                    name: $scope.eventname,
+                    text: $scope.eventdesc,
+                    date: $scope.eventdate
                 });
                 $scope.eventname='';
                 $scope.eventtext='';
                 $scope.eventdate='';
             }
-            $(function() {
-                var nowDate = new Date()
-                $( "#eventdate" ).datetimepicker({
-                    controlType:'select',
-                    format: "HH:mm",
-                    // stepMinute:30,
-                    minDate: nowDate
-                });
-            });     
+            $scope.beforeRender = function($view, $dates, $leftDate, $upDate, $rightDate) {
+                var dayValue    = moment().startOf('day').valueOf()
+                  , hourValue   = moment().startOf('hour').valueOf()
+                  , minuteValue = moment().startOf('minute').valueOf()
+                  , monthValue  = moment().startOf('month').valueOf()
+                  , yearValue   = moment().startOf('year').valueOf()
+                  , tempValue
+
+                if ($view == 'day') {
+                  tempValue = dayValue
+                } else if ($view == 'hour') {
+                  tempValue = hourValue
+                } else if ($view == 'minute') {
+                  tempValue = minuteValue
+                } else if ($view == 'month') {
+                  tempValue = monthValue
+                } else if ($view == 'year') {
+                  tempValue = yearValue
+                }
+
+                angular.forEach($dates, function(date) {
+                  if (date.utcDateValue < tempValue) date.selectable = false
+                })
+          }
+          $scope.config1 = {
+            format: 'MMMM Do YYYY, HH:mm',
+            minuteStep: 10,
+            ranges: {
+               'Today': [moment(), moment()],
+               'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+               'Tomorrow': [moment().add(1, 'days'), moment().add(1, 'days')],
+               'This Week': [moment().startOf('week'), moment().endOf('week')],
+               'Last Week': [moment().subtract(1, 'week').startOf('week'), moment().subtract(1, 'week').endOf('week')],
+               'This Month': [moment().startOf('month'), moment().endOf('month')],
+               'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+  };   
         }]);
     </script>
     <body ng-controller="EventListCtrl" class="container" ng-app='fitnessBuddy'>
         <div class="container">
-            <input type='text' ng-model='eventname' placeholder='New Event name' />
-            <input type='text' ng-model='eventdesc' placeholder='New Event description' />
-            <input type='text' ng-model='eventdate' id='eventdate' placeholder='Select date'>
-            <input type='submit' value="submit" ng-click="newEvent()"/>  
+            <form ng-submit="newEvent()">
+                <input type='text' ng-model='eventname' placeholder='New Event name' />
+                <input type='text' ng-model='eventdesc' placeholder='New Event description' />
+                <a class="btn btn-default" ez-datetime-control ng-model="eventdate" config="config1">
+                <i class="glyphicon glyphicon-calendar"></i>
+                {{ eventdate ? (eventdate | ezDate:'MMMM Do, YYYY [at] HH:mma') : 'Pick a Date' }}
+                </a>
+                <input type='submit'> 
+            </form> 
             <div class="page-header text-center">
                 <h1>Events</h1>
             </div>
-            <div ng-repeat="event list" class="list-group-item row">
-                <div class="col-md-6">
-                    <span>{{events.name}}</span>
-                    <small class="text-warning">[{{eventss.text}}]</small>
-                    <!--<span>{{event.date}}</span>-->
-                </div>
-            </div>
+            <ul>
+                <li ng-repeat="event in eventlist">{{ event.name }}: {{ event.text }}@{{ event.date }}</li>
+            </ul>
         </div>
 </body>
 </html>
