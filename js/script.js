@@ -1,11 +1,15 @@
 var app=angular.module('fitnessBuddy',['firebase','ui.bootstrap','angularMoment']);
-app.constant('FIREBASE_URL','https://sweltering-heat-7043.firebaseio.com/event2');
-app.controller('EventListCtrl',["$scope", "FIREBASE_URL","$firebaseArray","$modal",
-    function($scope, FIREBASE_URL, $firebaseArray,$modal){
-    var eventRef = new Firebase(FIREBASE_URL);
-    //create a query for the most recent 25 messages on the server
+app.constant('FIREBASE_URL','https://sweltering-heat-7043.firebaseio.com/');
+app.factory("Auth", ["$firebaseAuth","FIREBASE_URL",
+  function($firebaseAuth,FIREBASE_URL) {
+    var ref = new Firebase(FIREBASE_URL);
+    return $firebaseAuth(ref);
+  }
+]);
+app.controller('EventListCtrl',["$scope", "FIREBASE_URL","$firebaseArray","$modal","Auth",
+    function($scope, FIREBASE_URL, $firebaseArray,$modal,Auth){
+    var eventRef = new Firebase(FIREBASE_URL+'event2');
     var query = eventRef.orderByChild("date").limitToLast(25);
-    //the $firebaseArray service properly handles Firebase queries as well
     $scope.filteredEvents = $firebaseArray(query);
     $scope.open = function (size) {
     var modalInstance = $modal.open({
@@ -14,10 +18,14 @@ app.controller('EventListCtrl',["$scope", "FIREBASE_URL","$firebaseArray","$moda
       size: size
     });
     };
+    $scope.auth = Auth;
+    $scope.auth.$onAuth(function(authData){
+      $scope.authData = authData;
+    });
 }]);
 app.controller('NewEventModalCtrl',["$scope", "FIREBASE_URL", "$firebaseArray","$modalInstance",
  function($scope, FIREBASE_URL, $firebaseArray,$modalInstance){
-  var eventRef = new Firebase(FIREBASE_URL);
+  var eventRef = new Firebase(FIREBASE_URL+'event2');
   $scope.eventlist=$firebaseArray(eventRef);
   $scope.ok = function () {
     $modalInstance.close();
