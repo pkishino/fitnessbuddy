@@ -9,6 +9,7 @@ app.factory("Auth", ["$firebaseAuth", "FIREBASE_URL",
 app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modal", "Auth",
   function($scope, FIREBASE_URL, $firebaseArray, $modal, Auth) {
     var eventRef = new Firebase(FIREBASE_URL + 'event2');
+    $scope.eventlist = $firebaseArray(eventRef);
     var query = eventRef.orderByChild("date").limitToLast(25);
     $scope.filteredEvents = $firebaseArray(query);
     $scope.open = function(size) {
@@ -56,8 +57,6 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
 ]);
 app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modalInstance",
   function($scope, FIREBASE_URL, $firebaseArray, $modalInstance) {
-    var eventRef = new Firebase(FIREBASE_URL + 'event2');
-    $scope.eventlist = $firebaseArray(eventRef);
     $scope.ok = function() {
       $modalInstance.close();
     };
