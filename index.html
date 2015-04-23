@@ -46,6 +46,11 @@
         <p>Hello, {{ authData.facebook.displayName }} : {{ authData.facebook.cachedUserProfile.gender }}</p>
         <button ng-click="auth.$unauth()">Logout</button>
         <button class="btn btn-default" ng-click="open()">Add Event</button>
+        My subscribed events:
+            <ul>
+                <li ng-repeat="event in ownedEvents">{{ event.name }}: {{ event.text }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}
+                <button ng-click="remove(event)" class="btn btn-warning">remove</button></li>
+            </ul>
       </div>
       <div ng-hide="authData">
         <p>Welcome, please log in.</p>
@@ -56,7 +61,8 @@
             </div>
             Ordered events:
             <ul>
-                <li ng-repeat="event in filteredEvents">{{ event.name }}: {{ event.text }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}</li>
+                <li ng-repeat="event in filteredEvents">{{ event.name }}: {{ event.text }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}
+                <button ng-show="authData" ng-click="subscribe(event)" class="btn btn-primary">subscribe</button></li>
             </ul>
     </div>
       <div>

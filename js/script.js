@@ -22,6 +22,14 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
     $scope.auth.$onAuth(function(authData) {
       $scope.authData = authData;
     });
+    if ($scope.auth.authData){
+      var ownedRef = new Firebase(FIREBASE_URL + 'users/'+$scope.auth.authData.uid);
+      ownQuery = ownedRef.orderByChild("date");
+      $scope.ownedEvents = $firebaseArray(ownQuery);
+    }
+    $scope.subscribe = function(event){
+      $scope.ownedEvents.$add(event);
+    }
   }
 ]);
 app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modalInstance",
