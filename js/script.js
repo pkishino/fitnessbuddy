@@ -10,6 +10,17 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
   function($scope, FIREBASE_URL, $firebaseArray, $modal, Auth) {
     var eventRef = new Firebase(FIREBASE_URL + 'event2');
     $scope.eventlist = $firebaseArray(eventRef);
+    $scope.eventlist.$loaded(function(){
+      time = new Date().getTime();
+      for (index in $scope.eventlist){
+        event = $scope.eventlist[index];
+        if (event.date < time)
+          $scope.eventlist.$remove($scope.eventlist.$getRecord(event.$id));
+      }
+    }, function(error){
+      console.error("Error:",error);
+    });
+
     var query = eventRef.orderByChild("date").limitToLast(25);
     $scope.filteredEvents = $firebaseArray(query);
     $scope.open = function(size) {
@@ -46,12 +57,6 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
     };
     $scope.remove = function(id){
       $scope.ownedEvents.$remove($scope.ownedEvents.$getRecord(id))
-    }
-    if($scope.eventlist){
-      for (event in $scope.eventlist){
-        if (event.date < new Date().getTime())
-          $scope.eventlist.$remove($scope.eventlist.$getRecord(event.$id))
-      }
     }
   }
 ]);
