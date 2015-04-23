@@ -1,64 +1,65 @@
-var app=angular.module('fitnessBuddy',['firebase','ui.bootstrap','angularMoment']);
-app.constant('FIREBASE_URL','https://sweltering-heat-7043.firebaseio.com/');
-app.factory("Auth", ["$firebaseAuth","FIREBASE_URL",
-  function($firebaseAuth,FIREBASE_URL) {
+var app = angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment']);
+app.constant('FIREBASE_URL', 'https://sweltering-heat-7043.firebaseio.com/');
+app.factory("Auth", ["$firebaseAuth", "FIREBASE_URL",
+  function($firebaseAuth, FIREBASE_URL) {
     var ref = new Firebase(FIREBASE_URL);
     return $firebaseAuth(ref);
   }
 ]);
-app.controller('EventListCtrl',["$scope", "FIREBASE_URL","$firebaseArray","$modal","Auth",
-    function($scope, FIREBASE_URL, $firebaseArray,$modal,Auth){
-    var eventRef = new Firebase(FIREBASE_URL+'event2');
+app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modal", "Auth",
+  function($scope, FIREBASE_URL, $firebaseArray, $modal, Auth) {
+    var eventRef = new Firebase(FIREBASE_URL + 'event2');
     var query = eventRef.orderByChild("date").limitToLast(25);
     $scope.filteredEvents = $firebaseArray(query);
-    $scope.open = function (size) {
-    var modalInstance = $modal.open({
-      templateUrl: 'myModalContent.html',
-      controller: 'NewEventModalCtrl',
-      size: size
-    });
+    $scope.open = function(size) {
+      var modalInstance = $modal.open({
+        templateUrl: 'myModalContent.html',
+        controller: 'NewEventModalCtrl',
+        size: size
+      });
     };
     $scope.auth = Auth;
-    $scope.auth.$onAuth(function(authData){
+    $scope.auth.$onAuth(function(authData) {
       $scope.authData = authData;
     });
-}]);
-app.controller('NewEventModalCtrl',["$scope", "FIREBASE_URL", "$firebaseArray","$modalInstance",
- function($scope, FIREBASE_URL, $firebaseArray,$modalInstance){
-  var eventRef = new Firebase(FIREBASE_URL+'event2');
-  $scope.eventlist=$firebaseArray(eventRef);
-  $scope.ok = function () {
-    $modalInstance.close();
-  };
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
-  };
-  $scope.newEvent= function(){
-      var corrected_time=$scope.eventdate;
+  }
+]);
+app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modalInstance",
+  function($scope, FIREBASE_URL, $firebaseArray, $modalInstance) {
+    var eventRef = new Firebase(FIREBASE_URL + 'event2');
+    $scope.eventlist = $firebaseArray(eventRef);
+    $scope.ok = function() {
+      $modalInstance.close();
+    };
+    $scope.cancel = function() {
+      $modalInstance.dismiss('cancel');
+    };
+    $scope.newEvent = function() {
+      var corrected_time = $scope.eventdate;
       corrected_time.setHours($scope.eventtime.getHours());
       corrected_time.setMinutes($scope.eventtime.getMinutes());
-        $scope.eventlist.$add({
-            name: $scope.eventname,
-            text: $scope.eventdesc,
-            date: corrected_time.getTime()
-        });
-        $scope.eventname='';
-        $scope.eventdesc='';
-        $scope.eventdate='';
+      $scope.eventlist.$add({
+        name: $scope.eventname,
+        text: $scope.eventdesc,
+        date: corrected_time.getTime()
+      });
+      $scope.eventname = '';
+      $scope.eventdesc = '';
+      $scope.eventdate = '';
     };
     $scope.today = function() {
       $scope.eventdate = new Date();
     };
     $scope.toggleMin = function() {
-      var min=new Date();
-      min.setHours(min.getHours()+1);
+      var min = new Date();
+      min.setHours(min.getHours() + 1);
       min.setMinutes(0)
-      $scope.minDate = ( $scope.minDate ) ? null : min;
+      $scope.minDate = ($scope.minDate) ? null : min;
       $scope.eventtime = $scope.minDate;
     };
     $scope.toggleMin();
     $scope.dateOptions = {
-      formatMonth:'MM',
+      formatMonth: 'MM',
       startingDay: 1
     };
     $scope.open = function($event) {
@@ -66,5 +67,5 @@ app.controller('NewEventModalCtrl',["$scope", "FIREBASE_URL", "$firebaseArray","
       $event.stopPropagation();
       $scope.opened = true;
     };
-}]);
-      
+  }
+]);
