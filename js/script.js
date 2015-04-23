@@ -43,8 +43,8 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
     $scope.subscribe = function(event){
       $scope.ownedEvents.$add(event);
     };
-    $scope.remove = function(event){
-      $scope.ownedEvents.$remove(event)
+    $scope.remove = function(id){
+      $scope.ownedEvents.$remove($scope.ownedEvents.$getRecord(id))
     }
   }
 ]);

@@ -49,7 +49,7 @@
         My subscribed events:
             <ul>
                 <li ng-repeat="event in orderedOwnedEvents">{{ event.name }}: {{ event.text }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}
-                <button ng-click="remove(event)" class="btn btn-warning">remove</button></li>
+                <button ng-click="remove(event.$id)" class="btn btn-warning">remove</button></li>
             </ul>
       </div>
       <div ng-hide="authData">
