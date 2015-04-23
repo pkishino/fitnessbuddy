@@ -65,6 +65,18 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
     $scope.remove = function(id){
       $scope.ownedEvents.$remove($scope.ownedEvents.$getRecord(id))
     }
+    $scope.searchbox = {
+      template:'searchbox.tpl.html', 
+      events:{
+        places_changed: function (searchBox) {
+         places = searchBox.getPlaces();
+          if (places.length == 0) {
+            return;
+          }
+        }
+      }, 
+      options:{}
+    };  
   }
 ]);
 app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modalInstance",'uiGmapGoogleMapApi',
@@ -112,17 +124,5 @@ app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray",
       $scope.map = { center: { latitude: 45, longitude: -73 }, zoom: 8 };
     });
     $scope.options = {scrollwheel: false};
-    $scope.searchbox = {
-      template:'searchbox.tpl.html', 
-      events:{
-        places_changed: function (searchBox) {
-         places = searchBox.getPlaces();
-          if (places.length == 0) {
-            return;
-          }
-        }
-      }, 
-      options:{autocomplete:true}
-    };
   }  
 ]);
