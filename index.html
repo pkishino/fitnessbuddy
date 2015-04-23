@@ -19,6 +19,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.1/ui-bootstrap-tpls.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/0.10.0/angular-moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-google-maps/2.1.0-X.10/angular-google-maps.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
     <script src="js/script.js"></script>
   </head>
   <body>
@@ -32,18 +34,29 @@
         <div class="modal-body">
             <form ng-submit="newEvent()">
                 <input type='text' ng-model='eventname' placeholder='New Event name' ng-required="true" />
-                <input type='text' ng-model='eventdesc' placeholder='New Event description' ng-required="true" />
+                <script type='text/ng-template' id='searchbox.tpl.html'>
+                    <input type='text' placeholder='New Event location'>
+                </script>
+                <!-- <input type='text' ng-model='eventdesc' placeholder='New Event location' ng-required="true" /> -->
                 <input type="text" datepicker-popup="yyyy/MM/dd" ng-model="eventdate" min-date="minDate" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" placeholder="Event Date"/>
                 <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                 <timepicker ng-model="eventtime" ng-change="changed()" hour-step="1" minute-step="10" show-meridian="false" readonly-input="true"></timepicker>
                 <input type='submit'/>
             </form>
+            <ui-gmap-google-map center='map.center' zoom='map.zoom' draggable='true' options='options'>
+                <ui-gmap-search-box
+                  template='searchbox.template'
+                  events='searchbox.events'
+                  options='searchbox.options'>
+                </ui-gmap-search-box>
+            </ui-gmap-google-map>
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" ng-click="ok()">OK</button>
             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
         </div>
-      </script>    
+      </script>
+      <button class="btn btn-default" ng-click="open()">Add Event</button>    
       <div ng-show="authData">
         <p>Hello, {{ authData.facebook.displayName }} : {{ authData.facebook.cachedUserProfile.gender }}</p>
         <button ng-click="auth.$unauth()" class="btn btn-default">Logout</button>

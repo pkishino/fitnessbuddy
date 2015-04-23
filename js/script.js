@@ -1,4 +1,4 @@
-var app = angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment']);
+var app = angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'uiGmapgoogle-maps']);
 app.constant('FIREBASE_URL', 'https://sweltering-heat-7043.firebaseio.com/');
 app.factory("Auth", ["$firebaseAuth", "FIREBASE_URL",
   function($firebaseAuth, FIREBASE_URL) {
@@ -6,6 +6,13 @@ app.factory("Auth", ["$firebaseAuth", "FIREBASE_URL",
     return $firebaseAuth(ref);
   }
 ]);
+app.config(function(uiGmapGoogleMapApiProvider) {
+    uiGmapGoogleMapApiProvider.configure({
+        key: 'AIzaSyBtnOPyRzQV1GZSAgkF6_4xuTdG6rv_YAw',
+        v: '3.17',
+        libraries: 'weather,geometry,visualization,places'
+    });
+})
 app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modal", "Auth",
   function($scope, FIREBASE_URL, $firebaseArray, $modal, Auth) {
     var eventRef = new Firebase(FIREBASE_URL + 'event2');
@@ -60,8 +67,8 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
     }
   }
 ]);
-app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modalInstance",
-  function($scope, FIREBASE_URL, $firebaseArray, $modalInstance) {
+app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modalInstance",'uiGmapGoogleMapApi',
+  function($scope, FIREBASE_URL, $firebaseArray, $modalInstance,uiGmapGoogleMapApi) {
     $scope.ok = function() {
       $modalInstance.close();
     };
@@ -101,5 +108,21 @@ app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray",
       $event.stopPropagation();
       $scope.opened = true;
     };
-  }
+    uiGmapGoogleMapApi.then(function(maps) {
+      $scope.map = { center: { latitude: 45, longitude: -73 }, zoom: 8 };
+    });
+    $scope.options = {scrollwheel: false};
+    $scope.searchbox = {
+      template:'searchbox.tpl.html', 
+      events:{
+        places_changed: function (searchBox) {
+         places = searchBox.getPlaces();
+          if (places.length == 0) {
+            return;
+          }
+        }
+      }, 
+      options:{autocomplete:true}
+    };
+  }  
 ]);
