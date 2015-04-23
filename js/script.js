@@ -32,16 +32,14 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
             });
       });
     }
-    
-    // $scope.auth.$onAuth(function(authData) {
-    //   $scope.authData = authData;
-    // });
-    if ($scope.authData){
-      var ownedRef = new Firebase(FIREBASE_URL + 'users/'+$scope.auth.authData.uid);
-      $scope.ownedEvents = $firebaseArray(ownedRef);
-      ownQuery = ownedRef.orderByChild("date");
-      $scope.orderedOwnedEvents = $firebaseArray(ownQuery);
-    };
+    $scope.auth.$onAuth(function(authData) {
+      if(authData){
+        var ownedRef = new Firebase(FIREBASE_URL + 'users/'+$scope.auth.authData.uid);
+        $scope.ownedEvents = $firebaseArray(ownedRef);
+        ownQuery = ownedRef.orderByChild("date");
+        $scope.orderedOwnedEvents = $firebaseArray(ownQuery);
+      }
+    });
     $scope.subscribe = function(event){
       $scope.ownedEvents.$add(event);
     };
