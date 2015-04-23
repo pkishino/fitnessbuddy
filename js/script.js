@@ -12,7 +12,7 @@ app.config(function(uiGmapGoogleMapApiProvider) {
         v: '3.17',
         libraries: 'weather,geometry,visualization,places'
     });
-})
+});
 app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modal", "Auth",
   function($scope, FIREBASE_URL, $firebaseArray, $modal, Auth) {
     var eventRef = new Firebase(FIREBASE_URL + 'event2');
@@ -64,19 +64,7 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
     };
     $scope.remove = function(id){
       $scope.ownedEvents.$remove($scope.ownedEvents.$getRecord(id))
-    }
-    $scope.searchbox = {
-      template:'searchbox.tpl.html', 
-      events:{
-        places_changed: function (searchBox) {
-         places = searchBox.getPlaces();
-          if (places.length == 0) {
-            return;
-          }
-        }
-      }, 
-      options:{}
-    };  
+    }  
   }
 ]);
 app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modalInstance",'uiGmapGoogleMapApi',
@@ -106,7 +94,7 @@ app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray",
     $scope.toggleMin = function() {
       var min = new Date();
       min.setHours(min.getHours() + 1);
-      min.setMinutes(0)
+      min.setMinutes(0);
       $scope.minDate = ($scope.minDate) ? null : min;
       $scope.eventtime = $scope.minDate;
     };
@@ -124,5 +112,18 @@ app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray",
       $scope.map = { center: { latitude: 45, longitude: -73 }, zoom: 8 };
     });
     $scope.options = {scrollwheel: false};
+    $scope.searchbox = {
+      template:'searchbox.tpl.html',
+      parentdiv:'searchbox', 
+      events:{
+        places_changed: function (searchBox) {
+         places = searchBox.getPlaces();
+          if (places.length == 0) {
+            return;
+          }
+        }
+      }, 
+      options:{}
+    };
   }  
 ]);
