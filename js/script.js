@@ -19,10 +19,24 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
       });
     };
     $scope.auth = Auth;
-    $scope.auth.$onAuth(function(authData) {
-      $scope.authData = authData;
-    });
-    if ($scope.auth.authData){
+    $scope.login = function(){
+      $scope.auth.$authWithOAuthPopup("facebook").then(function(authData) {
+        console.log("Logged in as:", authData.uid);
+        $scope.authData = authData;
+        }).catch(function(error) {
+          $scope.auth.$authWithOAuthRedirect("facebook").then(function(authData) {
+            console.log("Logged in as:", authData.uid);
+            $scope.authData = authData;
+            }).catch(function(error) {
+              console.error("Authentication failed:", error);
+            });
+      });
+    }
+    
+    // $scope.auth.$onAuth(function(authData) {
+    //   $scope.authData = authData;
+    // });
+    if ($scope.authData){
       var ownedRef = new Firebase(FIREBASE_URL + 'users/'+$scope.auth.authData.uid);
       $scope.ownedEvents = $firebaseArray(ownedRef);
       ownQuery = ownedRef.orderByChild("date");
