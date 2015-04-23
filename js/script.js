@@ -46,6 +46,12 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
     $scope.remove = function(id){
       $scope.ownedEvents.$remove($scope.ownedEvents.$getRecord(id))
     }
+    if($scope.eventlist){
+      for (event in $scope.eventlist){
+        if (event.date < new Date().getTime())
+          $scope.eventlist.$remove($scope.eventlist.$getRecord(event.$id))
+      }
+    }
   }
 ]);
 app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modalInstance",
