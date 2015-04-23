@@ -24,8 +24,9 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
     });
     if ($scope.auth.authData){
       var ownedRef = new Firebase(FIREBASE_URL + 'users/'+$scope.auth.authData.uid);
+      $scope.ownedEvents = $firebaseArray(ownedRef);
       ownQuery = ownedRef.orderByChild("date");
-      $scope.ownedEvents = $firebaseArray(ownQuery);
+      $scope.orderedOwnedEvents = $firebaseArray(ownQuery);
     };
     $scope.subscribe = function(event){
       $scope.ownedEvents.$add(event);

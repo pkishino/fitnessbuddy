@@ -48,7 +48,7 @@
         <button class="btn btn-default" ng-click="open()">Add Event</button>
         My subscribed events:
             <ul>
-                <li ng-repeat="event in ownedEvents">{{ event.name }}: {{ event.text }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}
+                <li ng-repeat="event in orderedOwnedEvents">{{ event.name }}: {{ event.text }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}
                 <button ng-click="remove(event)" class="btn btn-warning">remove</button></li>
             </ul>
       </div>
