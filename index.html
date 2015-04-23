@@ -56,7 +56,8 @@
     </script>
         <script type="text/ng-template" id="searchbox.tpl.html">
                     <input type='text' placeholder='New Event location'/>
-        </script>  
+        </script>
+      <button class="btn btn-default" ng-click="open()">Add Event</button>    
       <div ng-show="authData">
         <p>Hello, {{ authData.facebook.displayName }} : {{ authData.facebook.cachedUserProfile.gender }}</p>
         <button ng-click="auth.$unauth()" class="btn btn-default">Logout</button>
