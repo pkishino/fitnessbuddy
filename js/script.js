@@ -52,7 +52,7 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
         $scope.orderedOwnedEvents = $firebaseArray(ownQuery);
       }
     });
-    $scope.subscribe = function(event){
+    $scope.join = function(event){
       $scope.ownedEvents.$add(event);
     };
     $scope.remove = function(id){
