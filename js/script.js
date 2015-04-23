@@ -43,6 +43,9 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
     $scope.subscribe = function(event){
       $scope.ownedEvents.$add(event);
     };
+    $scope.remove = function(event){
+      $scope.ownedEvents.$remove(event)
+    }
   }
 ]);
 app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modalInstance",
