@@ -21,7 +21,11 @@ app.controller('EventListCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$m
     $scope.auth = Auth;
     $scope.auth.$onAuth(function(authData) {
       $scope.authData = authData;
+      $scope.ownedEvents =
     });
+    $scope.subscribe = function(event){
+      var ownedEventRef =
+    }
   }
 ]);
 app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray", "$modalInstance",
