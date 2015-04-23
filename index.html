@@ -34,7 +34,7 @@
         <div class="modal-body">
             <form ng-submit="newEvent()">
                 <input type='text' ng-model='eventname' placeholder='New Event name' ng-required="true"/>
-                <div id='searchbox'></div>
+                <div id='searchbox_div'></div>
                 <input type="text" datepicker-popup="yyyy/MM/dd" ng-model="eventdate" min-date="minDate" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" placeholder="Event Date"/>
                 <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                 <timepicker ng-model="eventtime" ng-change="changed()" hour-step="1" minute-step="10" show-meridian="false" readonly-input="true"></timepicker>
@@ -44,7 +44,7 @@
                   template='searchbox.template'
                   events='searchbox.events'
                   options='searchbox.options'
-                  parentdiv='searchbox'>
+                  parentdiv='searchbox_div'>
                 </ui-gmap-search-box>
             </ui-gmap-google-map>
             </form>

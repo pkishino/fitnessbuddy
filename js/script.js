@@ -114,7 +114,7 @@ app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray",
     $scope.options = {scrollwheel: false};
     $scope.searchbox = {
       template:'searchbox.tpl.html',
-      parentdiv:'searchbox', 
+      parentdiv:'searchbox_div', 
       events:{
         places_changed: function (searchBox) {
          places = searchBox.getPlaces();
