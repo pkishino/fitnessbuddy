@@ -121,6 +121,7 @@ app.controller('NewEventModalCtrl', ["$scope", "FIREBASE_URL", "$firebaseArray",
           if (places.length == 0) {
             return;
           }
+          
         }
       }, 
       options:{}
