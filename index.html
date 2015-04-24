@@ -40,11 +40,7 @@
                 <timepicker ng-model="eventtime" ng-change="changed()" hour-step="1" minute-step="10" show-meridian="false" readonly-input="true"></timepicker>
                 <input type='submit'/>
             <ui-gmap-google-map center='map.center' zoom='map.zoom' draggable='true' options='options'>
-                <ui-gmap-search-box
-                  template='searchbox.template'
-                  events='searchbox.events'
-                  options='searchbox.options'
-                  parentdiv='searchbox_div'>
+                <ui-gmap-search-box ng-model="eventlocation" template='searchbox.template' events='searchbox.events' options='searchbox.options' parentdiv='searchbox.parentdiv'>
                 </ui-gmap-search-box>
             </ui-gmap-google-map>
             </form>
@@ -52,11 +48,11 @@
         <div class="modal-footer">
             <button class="btn btn-primary" ng-click="ok()">OK</button>
             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-        </div>
+        </div>       
     </script>
-        <script type="text/ng-template" id="searchbox.tpl.html">
-                    <input type='text' placeholder='New Event location'/>
-        </script>
+    <script type="text/ng-template" id='searchbox.tpl.html'>
+      <input id="pac-input" class="pac-controls" type="text" ng-model="ngModel" placeholder="Search">
+    </script>
       <button class="btn btn-default" ng-click="open()">Add Event</button>    
       <div ng-show="authData">
         <p>Hello, {{ authData.facebook.displayName }} : {{ authData.facebook.cachedUserProfile.gender }}</p>
@@ -64,7 +60,7 @@
         <button class="btn btn-default" ng-click="open()">Add Event</button>
         My events(created or joined):
             <ul>
-                <li ng-repeat="event in orderedOwnedEvents">{{ event.name }}: {{ event.text }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}
+                <li ng-repeat="event in orderedOwnedEvents">{{ event.name }}: {{ event.eventlocation }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}
                 <button ng-click="remove(event.$id)" class="btn btn-warning">remove</button></li>
             </ul>
       </div>
@@ -83,7 +79,7 @@
             </div>
             Ordered events:
             <ul>
-                <li ng-repeat="event in filteredEvents">{{ event.name }}: {{ event.text }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}
+                <li ng-repeat="event in filteredEvents">{{ event.name }}: {{ event.eventlocation }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}
                 <button ng-show="authData" ng-click="join(event)" class="btn btn-primary">join</button></li>
             </ul>
       <div>
