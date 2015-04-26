@@ -117,20 +117,20 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
       };
       uiGmapGoogleMapApi.then(function(maps) {
         maps.visualRefresh = true;
-        $scope.defaultBounds = new google.maps.LatLngBounds(
-          new google.maps.LatLng(40.82148, -73.66450),
-          new google.maps.LatLng(40.66541, -74.31715));
-        $scope.map.bounds = {
-          northeast: {
-            latitude: $scope.defaultBounds.getNorthEast().lat(),
-            longitude: $scope.defaultBounds.getNorthEast().lng()
-          },
-          southwest: {
-            latitude: $scope.defaultBounds.getSouthWest().lat(),
-            longitude: -$scope.defaultBounds.getSouthWest().lng()
+        // $scope.defaultBounds = new google.maps.LatLngBounds(
+        //   new google.maps.LatLng(40.82148, -73.66450),
+        //   new google.maps.LatLng(40.66541, -74.31715));
+        // $scope.map.bounds = {
+        //   northeast: {
+        //     latitude: $scope.defaultBounds.getNorthEast().lat(),
+        //     longitude: $scope.defaultBounds.getNorthEast().lng()
+        //   },
+        //   southwest: {
+        //     latitude: $scope.defaultBounds.getSouthWest().lat(),
+        //     longitude: -$scope.defaultBounds.getSouthWest().lng()
 
-          }
-        };
+        //   }
+        // };
       });
       $scope.options = {
         scrollwheel: false
@@ -176,13 +176,13 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
               return;
             }
             var place = places[0];
-            var bounds = new google.maps.LatLngBounds();
+            // var bounds = new google.maps.LatLngBounds();
             $scope.map = {
               "center": {
                 "latitude": place.geometry.location.lat(),
                 "longitude": place.geometry.location.lng()
               },
-              "zoom": 18
+              "zoom": 12
             };
             $scope.marker = {
               id: 0,
@@ -192,17 +192,17 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
               }
             };
             $scope.eventlocation = place.name;
-            bounds.extend(place.geometry.location);
-            $scope.map.bounds = {
-              northeast: {
-                latitude: bounds.getNorthEast().lat(),
-                longitude: bounds.getNorthEast().lng()
-              },
-              southwest: {
-                latitude: bounds.getSouthWest().lat(),
-                longitude: bounds.getSouthWest().lng()
-              }
-            };
+            // bounds.extend(place.geometry.location);
+            // $scope.map.bounds = {
+            //   northeast: {
+            //     latitude: bounds.getNorthEast().lat(),
+            //     longitude: bounds.getNorthEast().lng()
+            //   },
+            //   southwest: {
+            //     latitude: bounds.getSouthWest().lat(),
+            //     longitude: bounds.getSouthWest().lng()
+            //   }
+            // };
           },
           options: {}
         }
