@@ -61,6 +61,7 @@
 					<ul>
 						<li ng-repeat="event in orderedOwnedEvents">
 						<script type="text/javascript">document.write(eventListFormat)</script>
+						<button  ng-click="open(event)" class="btn btn-primary">view</button>
 						<button ng-click="remove(event.$id)" class="btn btn-warning">remove</button></li>
 					</ul>
 				</div>
@@ -80,7 +81,7 @@
 				Ordered events:
 				<ul>
 					<li ng-repeat="event in filteredEvents"><script type="text/javascript">document.write(eventListFormat)</script>
-					<button  ng-click="open(event)" class="btn btn-primary">view</button></li>
+					<button  ng-click="open(event)" class="btn btn-primary">view</button>
 					<button ng-show="authData" ng-click="join(event)" class="btn btn-primary">join</button></li>
 				</ul>
 				<script type="text/ng-template" id="viewEvent.html">
