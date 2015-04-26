@@ -1,91 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <title>FitnessBuddy</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/4.9.0/bootstrap-social.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/style.css">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.min.js"></script>
-    <script src='https://cdn.firebase.com/js/client/2.2.2/firebase.js'></script>
-    <script src="https://cdn.firebase.com/libs/angularfire/1.0.0/angularfire.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.1/ui-bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.1/ui-bootstrap-tpls.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/0.10.0/angular-moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-google-maps/2.1.0-X.10/angular-google-maps.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
-    <script src="js/script.js"></script>
-  </head>
-  <body>
-  <a href="https://www.ssl.com/site_seals/f3080572-5536a613/site_report" onclick="window.open('https://www.ssl.com/site_seals/f3080572-5536a613/site_report', 'site_report','height=500, width=400, top=100, left=100'); return false;" onmouseover="this.style.cursor='pointer'" style="border: none;"><img alt="Ssl_seal_1" src="https://www.ssl.com/images/ssl_seal_1.png" width="130px" /></a>
-  <div ng-app='fitnessBuddy'>
-    <div ng-controller="EventListCtrl">
-    <script type="text/ng-template" id="myModalContent.html">
-        <div class="modal-header">
-          <h3 class="modal-title">New Event</h3>
-        </div>
-        <div class="modal-body">
-            <input type='text' ng-model='eventname' placeholder='New Event name' ng-required="true"/>
-            <div id='searchbox_div'></div>
-            <input type="text" datepicker-popup="yyyy/MM/dd" ng-model="eventdate" min-date="minDate" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" placeholder="EventDate"/>
-            <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-            <timepicker ng-model="eventtime" ng-change="changed()" hour-step="1" minute-step="10" show-meridian="false" readonly-input="true"></timepicker>
-            <ui-gmap-google-map center='map.center' zoom='map.zoom' draggable='true' options='options'>
-                <ui-gmap-search-box ng-model="eventlocation" template='searchbox.template' events='searchbox.events' options='searchbox.options' parentdiv='searchbox.parentdiv'>
-                </ui-gmap-search-box>
-                <ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">
-            </ui-gmap-google-map>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary" ng-click="ok()">OK</button>
-            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-        </div>       
-    </script>
-    <script type="text/ng-template" id='searchbox.tpl.html'>
-      <input id="pac-input" class="pac-input" type="text" ng-model="ngModel" placeholder="Search">
-    </script>
-      <button class="btn btn-default" ng-click="open()">Add Event</button>    
-      <div ng-show="authData">
-        <p>Hello, {{ authData.facebook.displayName }} : {{ authData.facebook.cachedUserProfile.gender }}</p>
-        <button ng-click="auth.$unauth()" class="btn btn-default">Logout</button>
-        <button class="btn btn-default" ng-click="open()">Add Event</button>
-        My events(created or joined):
-            <ul>
-                <li ng-repeat="event in orderedOwnedEvents">{{ event.name }}: {{ event.text }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}
-                <button ng-click="remove(event.$id)" class="btn btn-warning">remove</button></li>
-            </ul>
-      </div>
-      <div ng-hide="authData">
-        <p>Welcome. Here you can see a list will all events currently available</p>
-        <p>If you would like to add a new event or join an event, please login first</p>
-        <p>Currently only facebook is supported</p>
-        <div class="col-xs-2">
-        <a class='btn btn-block btn-social btn-facebook' ng-click="login()">
-            <i class='fa fa-facebook'></i>Login With Facebook
-        </a>
-        </div>
-      </div> 
-            <div class="page-header text-center">
-                <h1>Events</h1>
-            </div>
-            Ordered events:
-            <ul>
-                <li ng-repeat="event in filteredEvents">{{ event.name }}: {{ event.text }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}
-                <button ng-show="authData" ng-click="join(event)" class="btn btn-primary">join</button></li>
-            </ul>
-      <div>
-        <ul>
-          <li><a href="https://github.com/pziegler/fitnessbuddy/issues">Submit Website Bug/Requests</a></li>
-        </ul>
-    </div>
-  </div>
-  </div>
-</body>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<title>FitnessBuddy</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/4.9.0/bootstrap-social.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="css/style.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.min.js"></script>
+		<script src='https://cdn.firebase.com/js/client/2.2.2/firebase.js'></script>
+		<script src="https://cdn.firebase.com/libs/angularfire/1.0.0/angularfire.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.1/ui-bootstrap.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.1/ui-bootstrap-tpls.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/0.10.0/angular-moment.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-google-maps/2.1.0-X.10/angular-google-maps.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
+		<script src="js/script.js"></script>
+	</head>
+	<body>
+		<a href="https://www.ssl.com/site_seals/f3080572-5536a613/site_report" onclick="window.open('https://www.ssl.com/site_seals/f3080572-5536a613/site_report', 'site_report','height=500, width=400, top=100, left=100'); return false;" onmouseover="this.style.cursor='pointer'" style="border: none;"><img alt="Ssl_seal_1" src="https://www.ssl.com/images/ssl_seal_1.png" width="130px" /></a>
+		<div ng-app='fitnessBuddy'>
+			<div ng-controller="EventListCtrl">
+				<script type="text/ng-template" id="newEvent.html">
+				<div class="modal-header">
+					<h3 class="modal-title">New Event</h3>
+				</div>
+				<div class="modal-body">
+					<input type='text' ng-model='eventname' placeholder='New Event name' ng-required="true"/>
+					<div id='searchbox_div'></div>
+					<input type="text" datepicker-popup="yyyy/MM/dd" ng-model="eventdate" min-date="minDate" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" placeholder="EventDate"/>
+					<button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+					<timepicker ng-model="eventtime" ng-change="changed()" hour-step="1" minute-step="10" show-meridian="false" readonly-input="true"></timepicker>
+					<ui-gmap-google-map center='map.center' zoom='map.zoom' draggable='true' options='options'>
+					<ui-gmap-search-box ng-model="eventlocation" template='searchbox.template' events='searchbox.events' options='searchbox.options' parentdiv='searchbox.parentdiv'>
+					</ui-gmap-search-box>
+					<ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">
+					</ui-gmap-google-map>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-primary" ng-click="ok()">OK</button>
+					<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+				</div>
+				</script>
+				<script type="text/ng-template" id='searchbox.tpl.html'>
+				<input id="pac-input" class="pac-input" type="text" ng-model="ngModel" placeholder="Search">
+				</script>
+				<button class="btn btn-default" ng-click="open()">Add Event</button>
+				<div ng-show="authData">
+					<p>Hello, {{ authData.facebook.displayName }} : {{ authData.facebook.cachedUserProfile.gender }}</p>
+					<button ng-click="auth.$unauth()" class="btn btn-default">Logout</button>
+					<button class="btn btn-default" ng-click="open()">Add Event</button>
+					My events(created or joined):
+					<ul>
+						<li ng-repeat="event in orderedOwnedEvents">{{ event.name }}: {{ event.marker.name }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}
+						<button ng-click="remove(event.$id)" class="btn btn-warning">remove</button></li>
+					</ul>
+				</div>
+				<div ng-hide="authData">
+					<p>Welcome. Here you can see a list will all events currently available</p>
+					<p>If you would like to add a new event or join an event, please login first</p>
+					<p>Currently only facebook is supported</p>
+					<div class="col-xs-2">
+						<a class='btn btn-block btn-social btn-facebook' ng-click="login()">
+							<i class='fa fa-facebook'></i>Login With Facebook
+						</a>
+					</div>
+				</div>
+				<div class="page-header text-center">
+					<h1>Events</h1>
+				</div>
+				Ordered events:
+				<ul>
+					<li ng-repeat="event in filteredEvents">{{ event.name }}: {{ event.marker.name }} - {{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}
+					<button  ng-click="open(event)" class="btn btn-primary">view</button></li>
+					<button ng-show="authData" ng-click="join(event)" class="btn btn-primary">join</button></li>
+				</ul>
+				<script type="text/ng-template" id="viewEvent.html">
+					<div class="modal-header">
+						<h3 class="modal-title">View Event</h3>
+					</div>
+					<div class="modal-body">
+						<input type='text' value = '{{ event.name }}' readonly/>
+						<input type='text' value = '{{ event.marker.name }}' readonly/>
+						<input type="text" value = "{{ event.date | amDateFormat:'DD/MM/YYYY' }}@ {{ event.date | amDateFormat:'HH:mm'}}" readonly/>
+						<ui-gmap-google-map center='map.center' zoom='map.zoom' draggable='true' options='options'>
+						<ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">
+						</ui-gmap-google-map>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" ng-click="ok()">OK</button>
+						<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+					</div>
+				</script>
+				<div>
+					<ul>
+						<li><a href="https://github.com/pziegler/fitnessbuddy/issues">Submit Website Bug/Requests</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>
