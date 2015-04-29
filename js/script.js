@@ -57,11 +57,9 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			$scope.auth = Auth;
 			$scope.login = function() {
 				$scope.auth.$authWithOAuthPopup('facebook').then(function(authData) {
-					console.log('Logged in as:', authData.uid);
 					$scope.authData = authData;
 				}).catch(function(error) {
 					$scope.auth.$authWithOAuthRedirect('facebook').then(function(authData) {
-						console.log('Logged in as:', authData.uid);
 						$scope.authData = authData;
 					}).catch(function(error) {
 						console.error('Authentication failed:', error);
