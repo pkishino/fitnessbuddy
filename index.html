@@ -33,7 +33,7 @@
 					<h3 class="modal-title">New Event</h3>
 				</div>
 				<div class="modal-body">
-					<input type='text' ng-model='eventname' placeholder='Event type'/>
+					<input type='text' ng-model='eventname' placeholder='Event types' ng-required="true" typeahead="type.name for type in getTypes($viewValue)" typeahead-loading="loadingTypes" class="form-control"/><i ng-show="loadingTypes" class="glyphicon glyphicon-refresh"></i>
 					<div id='searchbox_div'></div>
 					<input type="text" datepicker-popup="yyyy/MM/dd" ng-model="eventdate" min-date="minDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" placeholder="EventDate"/>
 					<button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -57,7 +57,7 @@
 						<p>Hello, {{ authData.facebook.displayName }} : {{ authData.facebook.cachedUserProfile.gender }}</p>
 						<a class='btn btn-block btn-social btn-facebook' ng-click="auth.$unauth()">
 								<i class='fa fa-facebook'></i>Logout
-							</a>
+						</a>
 						<button class="btn btn-primary" ng-click="open()">Add Event</button>
 					</div>
 					<div ng-show="authData" class="col-md-8">

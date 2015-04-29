@@ -16,12 +16,16 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 	.controller('EventListCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$modal', 'Auth',
 		function($scope, FIREBASE_URL, $firebaseArray, $modal, Auth) {
 			var eventRef = new Firebase(FIREBASE_URL + 'events');
+			var query = eventRef.orderByChild('date').limitToLast(25);
+			$scope.filteredEvents = $firebaseArray(query);
 			$scope.eventlist = $firebaseArray(eventRef);
 			$scope.eventlist.$loaded(function() {
 				var time = new Date().getTime();
+				console.info(time);
 				var i;
 				var event;
 				for (i = 0, event = $scope.eventlist[i]; i < $scope.eventlist.length; i++) {
+					console.info(event.date);
 					if (event.date < time) {
 						var item = $scope.eventlist.$getRecord(event.$id);
 						$scope.eventlist.$remove(item);
@@ -30,9 +34,6 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			}, function(error) {
 				console.error('Error:', error);
 			});
-
-			var query = eventRef.orderByChild('date').limitToLast(25);
-			$scope.filteredEvents = $firebaseArray(query);
 			$scope.open = function(size) {
 				var modalInstance;
 				if (size === undefined) {
@@ -127,6 +128,8 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 				correctedTime.setHours($scope.eventtime.getHours());
 				correctedTime.setMinutes($scope.eventtime.getMinutes());
 				var time = correctedTime.getTime();
+				console.info('Now'+new Date().getTime());
+				console.info('Corrected time'+correctedTime);
 				$scope.eventlist.$add({
 					name: $scope.eventname,
 					marker: $scope.marker,
