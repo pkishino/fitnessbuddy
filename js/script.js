@@ -20,20 +20,14 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			$scope.filteredEvents = $firebaseArray(query);
 			$scope.eventlist = $firebaseArray(eventRef);
 			$scope.eventlist.$loaded(function() {
-				var time = new Date().getTime();
-				// console.info(time);
-				for (var i = 0; i < $scope.eventlist.length; i++) {
-					var event = $scope.eventlist[i];
-					// console.info(event.date);
-					// console.info(event.date - time);
-					if (event.date < time) {
-						var item = $scope.eventlist.$getRecord(event.$id);
-						// console.info(item.name)
-						$scope.eventlist.$remove(item);
-					}
-				}
+				cull();
 			}, function(error) {
 				console.error('Error:', error);
+			});
+			$scope.eventlist.$watch(function(event){
+				if(event.event == "child_added"){
+					cull();	
+				}
 			});
 			$scope.open = function(size) {
 				var modalInstance;
@@ -83,6 +77,20 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			$scope.remove = function(id) {
 				$scope.ownedEvents.$remove($scope.ownedEvents.$getRecord(id));
 			};
+			function cull(){
+				var time = new Date().getTime();
+				// console.info(time);
+				for (var i = 0; i < $scope.eventlist.length; i++) {
+					var event = $scope.eventlist[i];
+					// console.info(event.date);
+					// console.info(event.date - time);
+					if (event.date < time) {
+						var item = $scope.eventlist.$getRecord(event.$id);
+						// console.info(item.name)
+						$scope.eventlist.$remove(item);
+					}
+				}
+			}
 		}
 	])
 	.controller('NewEventModalCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$modalInstance', 'uiGmapGoogleMapApi',
@@ -104,10 +112,10 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			$scope.ok = function() {
 				if ($scope.eventdate && $scope.eventname && $scope.eventlocation) {
 					typeQuery = typeRef.orderByChild('name').startAt($scope.eventname).endAt($scope.eventname);
-					var typelist = $firebaseArray(typeQuery)
+					var typelist = $firebaseArray(typeQuery);
 					typelist.$loaded()
 						.then(function() {
-							if (typelist.length == 0) {
+							if (typelist.length === 0) {
 								typelist.$add({
 									name: $scope.eventname
 								});
