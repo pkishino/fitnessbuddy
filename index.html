@@ -33,12 +33,11 @@
 					<h3 class="modal-title">New Event</h3>
 				</div>
 				<div class="modal-body">
-					<input type='text' ng-model='eventname' placeholder='Event types' ng-required="true" typeahead="type.name for type in getTypes($viewValue)" typeahead-loading="loadingTypes" class="form-control"/>
-                    <i ng-show="loadingTypes" class="glyphicon glyphicon-refresh"></i>
+					<input type='text' ng-model='eventname' placeholder='Event type'/>
 					<div id='searchbox_div'></div>
-					<input type="text" datepicker-popup="yyyy/MM/dd" ng-model="eventdate" min-date="minDate" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" placeholder="EventDate"/>
+					<input type="text" datepicker-popup="yyyy/MM/dd" ng-model="eventdate" min-date="minDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" placeholder="EventDate"/>
 					<button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-					<timepicker ng-model="eventtime" ng-change="changed()" hour-step="1" minute-step="10" show-meridian="false" readonly-input="true" ng-required="true"></timepicker>
+					<timepicker ng-model="eventtime" ng-change="changed()" hour-step="1" minute-step="10" show-meridian="false" readonly-input="true"></timepicker>
 					<ui-gmap-google-map center='map.center' zoom='map.zoom' draggable='true' options='options'>
 					<ui-gmap-search-box ng-model="eventlocation" template='searchbox.template' events='searchbox.events' options='searchbox.options' parentdiv='searchbox.parentdiv'>
 					</ui-gmap-search-box>
@@ -53,11 +52,13 @@
 				<script type="text/ng-template" id='searchbox.tpl.html'>
 				<input id="pac-input" class="pac-input" type="text" ng-model="ngModel" placeholder="Search">
 				</script>
-				<button class="btn btn-default" ng-click="open()">Add Event</button>
 				<div class="row">
 					<div ng-show="authData" class="col-md-4">
 						<p>Hello, {{ authData.facebook.displayName }} : {{ authData.facebook.cachedUserProfile.gender }}</p>
-						<button ng-click="auth.$unauth()" class="btn btn-default">Logout</button>
+						<!-- <button ng-click="auth.$unauth()" class="btn btn-facebook">Logout</button> -->
+						<a class='btn btn-block btn-social btn-facebook' ng-click="auth.$unauth()">
+								<i class='fa fa-facebook'></i>Logout
+							</a>
 						<button class="btn btn-default" ng-click="open()">Add Event</button>
 					</div>
 					<div ng-show="authData" class="col-md-8">
@@ -78,15 +79,20 @@
 							</a>
 					</div>
 				</div>
-				<div class="page-header text-center">
-					<h1>Events</h1>
+				<h1>Events</h1>
+				<div class="container-fluid">				
+				<div class="row" ng-repeat="event in filteredEvents">
+					<div class="col-md-4">
+					<script type="text/javascript">document.write(eventListFormat)</script>
+					</div>
+					<div class="col-md-1">
+					<button ng-click="open(event)" class="btn btn-primary">view</button>
+					</div>
+					<div class="col-md-1">
+					<button ng-show="authData" ng-click="join(event)" class="btn btn-primary">join</button>
+					</div
 				</div>
-				Ordered events:
-				<ul>
-					<li ng-repeat="event in filteredEvents"><script type="text/javascript">document.write(eventListFormat)</script>
-					<button  ng-click="open(event)" class="btn btn-primary">view</button>
-					<button ng-show="authData" ng-click="join(event)" class="btn btn-primary">join</button></li>
-				</ul>
+				</div>
 				<script type="text/ng-template" id="viewEvent.html">
 					<div class="modal-header">
 						<h3 class="modal-title">View Event</h3>

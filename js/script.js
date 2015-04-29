@@ -35,13 +35,13 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			$scope.filteredEvents = $firebaseArray(query);
 			$scope.open = function(size) {
 				var modalInstance;
-				if (size === undefined){
-						modalInstance = $modal.open({
+				if (size === undefined) {
+					modalInstance = $modal.open({
 						templateUrl: 'newEvent.html',
 						controller: 'NewEventModalCtrl'
 					});
 				} else {
-						modalInstance = $modal.open({
+					modalInstance = $modal.open({
 						templateUrl: 'viewEvent.html',
 						controller: 'ViewEventModalCtrl',
 						size: size,
@@ -69,6 +69,7 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 				});
 			};
 			$scope.auth.$onAuth(function(authData) {
+				$scope.authData=authData;
 				if (authData) {
 					var ownedRef = new Firebase(FIREBASE_URL + 'users/' + authData.uid);
 					$scope.ownedEvents = $firebaseArray(ownedRef);
@@ -89,34 +90,36 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			var eventRef = new Firebase(FIREBASE_URL + 'events');
 			$scope.eventlist = $firebaseArray(eventRef);
 			var typeRef = new Firebase(FIREBASE_URL + 'types');
-            $scope.getTypes = function(val){
-            	var typeQuery = typeRef.orderByChild('name').startAt(val).endAt(val+'~');
-                var typelist = $firebaseArray(typeQuery);
-                return typelist.$loaded()
-                    .then(function() {
-                        return typelist;
-                    })
-                    .catch(function(error) {
-                        console.log("Error:", error);
-                    });
-            };
+			$scope.getTypes = function(val) {
+				var typeQuery = typeRef.orderByChild('name').startAt(val).endAt(val + '~');
+				var typelist = $firebaseArray(typeQuery);
+				return typelist.$loaded()
+					.then(function() {
+						return typelist;
+					})
+					.catch(function(error) {
+						console.log("Error:", error);
+					});
+			};
 			$scope.ok = function() {
-				typeQuery = typeRef.orderByChild('name').startAt($scope.eventname).endAt($scope.eventname);
-				var typelist = $firebaseArray(typeQuery)
-				typelist.$loaded()
-                    .then(function() {
-                        if (typelist.length == 0){
-							typelist.$add({
-								name:$scope.eventname
-							});
-						}
-                    })
-                    .catch(function(error) {
-                        console.log("Error:", error);
-                    });
-				
-				$scope.newEvent();
-				$modalInstance.close();
+				if ($scope.eventdate && $scope.eventname && $scope.eventlocation) {
+					typeQuery = typeRef.orderByChild('name').startAt($scope.eventname).endAt($scope.eventname);
+					var typelist = $firebaseArray(typeQuery)
+					typelist.$loaded()
+						.then(function() {
+							if (typelist.length == 0) {
+								typelist.$add({
+									name: $scope.eventname
+								});
+							}
+						})
+						.catch(function(error) {
+							console.log("Error:", error);
+						});
+
+					$scope.newEvent();
+					$modalInstance.close();
+				}
 			};
 			$scope.cancel = function() {
 				$modalInstance.dismiss('cancel');
@@ -208,35 +211,35 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 							zoom: 15
 						};
 					}
-					},
-					options: {}
-				};
-			}
+				},
+				options: {}
+			};
+		}
 	])
 	.controller('ViewEventModalCtrl', ['$scope', '$modalInstance', 'uiGmapGoogleMapApi', 'event',
-			function($scope, $modalInstance, uiGmapGoogleMapApi, event) {
-				$scope.event = event;
-				$scope.ok = function() {
-					$modalInstance.close();
-				};
-				$scope.cancel = function() {
-					$modalInstance.dismiss('cancel');
-				};
-				$scope.marker = event.marker;
-				uiGmapGoogleMapApi.then(function(maps) {
-					maps.visualRefresh = true;
-				});
-				$scope.options = {
-					scrollwheel: false
-				};
-				$scope.map = {
-					control: {},
-					center: {
-						latitude: $scope.marker.coords.latitude,
-						longitude: $scope.marker.coords.longitude
-					},
-					zoom: 15,
-					dragging: true
-				};
-			}
-			]);
+		function($scope, $modalInstance, uiGmapGoogleMapApi, event) {
+			$scope.event = event;
+			$scope.ok = function() {
+				$modalInstance.close();
+			};
+			$scope.cancel = function() {
+				$modalInstance.dismiss('cancel');
+			};
+			$scope.marker = event.marker;
+			uiGmapGoogleMapApi.then(function(maps) {
+				maps.visualRefresh = true;
+			});
+			$scope.options = {
+				scrollwheel: false
+			};
+			$scope.map = {
+				control: {},
+				center: {
+					latitude: $scope.marker.coords.latitude,
+					longitude: $scope.marker.coords.longitude
+				},
+				zoom: 15,
+				dragging: true
+			};
+		}
+	]);
