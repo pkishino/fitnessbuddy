@@ -33,11 +33,12 @@
 					<h3 class="modal-title">New Event</h3>
 				</div>
 				<div class="modal-body">
-					<input type='text' ng-model='eventname' placeholder='Event type' ng-required="true"/>
+					<input type='text' ng-model='eventname' placeholder='Event types' ng-required="true" typeahead="type.name for type in getTypes($viewValue)" typeahead-loading="loadingTypes" class="form-control"/>
+                    <i ng-show="loadingTypes" class="glyphicon glyphicon-refresh"></i>
 					<div id='searchbox_div'></div>
 					<input type="text" datepicker-popup="yyyy/MM/dd" ng-model="eventdate" min-date="minDate" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" placeholder="EventDate"/>
 					<button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-					<timepicker ng-model="eventtime" ng-change="changed()" hour-step="1" minute-step="10" show-meridian="false" readonly-input="true"></timepicker>
+					<timepicker ng-model="eventtime" ng-change="changed()" hour-step="1" minute-step="10" show-meridian="false" readonly-input="true" ng-required="true"></timepicker>
 					<ui-gmap-google-map center='map.center' zoom='map.zoom' draggable='true' options='options'>
 					<ui-gmap-search-box ng-model="eventlocation" template='searchbox.template' events='searchbox.events' options='searchbox.options' parentdiv='searchbox.parentdiv'>
 					</ui-gmap-search-box>

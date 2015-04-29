@@ -88,7 +88,33 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 		function($scope, FIREBASE_URL, $firebaseArray, $modalInstance, uiGmapGoogleMapApi) {
 			var eventRef = new Firebase(FIREBASE_URL + 'events');
 			$scope.eventlist = $firebaseArray(eventRef);
+			var typeRef = new Firebase(FIREBASE_URL + 'types');
+            $scope.getTypes = function(val){
+            	var typeQuery = typeRef.orderByChild('name').startAt(val).endAt(val+'~');
+                var typelist = $firebaseArray(typeQuery);
+                return typelist.$loaded()
+                    .then(function() {
+                        return typelist;
+                    })
+                    .catch(function(error) {
+                        console.log("Error:", error);
+                    });
+            };
 			$scope.ok = function() {
+				typeQuery = typeRef.orderByChild('name').startAt($scope.eventname).endAt($scope.eventname);
+				var typelist = $firebaseArray(typeQuery)
+				typelist.$loaded()
+                    .then(function() {
+                        if (typelist.length == 0){
+							typelist.$add({
+								name:$scope.eventname
+							});
+						}
+                    })
+                    .catch(function(error) {
+                        console.log("Error:", error);
+                    });
+				
 				$scope.newEvent();
 				$modalInstance.close();
 			};
