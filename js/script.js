@@ -21,13 +21,14 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			$scope.eventlist = $firebaseArray(eventRef);
 			$scope.eventlist.$loaded(function() {
 				var time = new Date().getTime();
-				console.info(time);
-				var i;
-				var event;
-				for (i = 0, event = $scope.eventlist[i]; i < $scope.eventlist.length; i++) {
-					console.info(event.date);
+				// console.info(time);
+				for (var i = 0; i < $scope.eventlist.length; i++) {
+					var event = $scope.eventlist[i];
+					// console.info(event.date);
+					// console.info(event.date - time);
 					if (event.date < time) {
 						var item = $scope.eventlist.$getRecord(event.$id);
+						// console.info(item.name)
 						$scope.eventlist.$remove(item);
 					}
 				}
@@ -128,8 +129,8 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 				correctedTime.setHours($scope.eventtime.getHours());
 				correctedTime.setMinutes($scope.eventtime.getMinutes());
 				var time = correctedTime.getTime();
-				console.info('Now'+new Date().getTime());
-				console.info('Corrected time'+correctedTime);
+				// console.info('Now'+new Date().getTime());
+				// console.info('Corrected time'+time);
 				$scope.eventlist.$add({
 					name: $scope.eventname,
 					marker: $scope.marker,
