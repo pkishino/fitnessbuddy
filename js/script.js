@@ -67,15 +67,26 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 				if (authData) {
 					var ownedRef = new Firebase(FIREBASE_URL + 'users/' + authData.uid);
 					$scope.ownedEvents = $firebaseArray(ownedRef);
-					var ownQuery = ownedRef.orderByChild('date');
-					$scope.orderedOwnedEvents = $firebaseArray(ownQuery);
+					$scope.ownedEvents.$loaded(function() {
+						$scope.myEvents = [];
+						for (var i = 0; i < $scope.ownedEvents.length; i++) {
+							addToEvent(i);
+						}
+				}, function(error) {
+					console.error('Error:', error);
+				});
 				}
 			});
 			$scope.join = function(event) {
-				$scope.ownedEvents.$add(event);
+				$scope.ownedEvents.$add(event.$id);
+				addToEvent($scope.ownedEvents.length);
 			};
 			$scope.remove = function(id) {
-				$scope.ownedEvents.$remove($scope.ownedEvents.$getRecord(id));
+				$scope.ownedEvents.$remove($scope.ownedEvents.$indexFor(id));
+				index = $scope.myEvents.indexOf(id);
+				if (index >-1){
+					$scope.myEvents.splice(index,1);
+				}
 			};
 			function cull(){
 				var time = new Date().getTime();
@@ -85,11 +96,14 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 					// console.info(event.date);
 					// console.info(event.date - time);
 					if (event.date < time) {
-						var item = $scope.eventlist.$getRecord(event.$id);
 						// console.info(item.name)
-						$scope.eventlist.$remove(item);
+						$scope.eventlist.$remove($scope.eventlist.$indexFor(event.$id));
 					}
 				}
+			}
+			function addToEvent(index){
+				id = $scope.ownedEvents.$getRecord($scope.ownedEvents.$keyAt(index)).$value;
+				$scope.myEvents[$scope.myEvents.length] = $scope.eventlist.$getRecord(id);
 			}
 		}
 	])

@@ -23,7 +23,7 @@
 	</head>
 	<body>
 	<script type="text/javascript">
-		var eventListFormat = "{{ event.date | amDateFormat:'DD/MM/YYYY' }} : {{ event.name }}: {{ event.marker.name }} - {{ event.date | amDateFormat:'HH:mm'}}"
+		var eventListFormat = "{{ event.date | amDateFormat:'DD/MM/YYYY' }} : {{ event.name }} : {{ event.marker.name }} - {{ event.date | amDateFormat:'HH:mm'}}"
 	</script>
 		<a href="https://www.ssl.com/site_seals/f3080572-5536a613/site_report" onclick="window.open('https://www.ssl.com/site_seals/f3080572-5536a613/site_report', 'site_report','height=500, width=400, top=100, left=100'); return false;" onmouseover="this.style.cursor='pointer'" style="border: none;"><img alt="Ssl_seal_1" src="https://www.ssl.com/images/ssl_seal_1.png" width="130px" /></a>
 		<div ng-app='fitnessBuddy' class="container">
@@ -63,7 +63,7 @@
 					<div ng-show="authData" class="col-md-8">
 						My events(created or joined):
 						<ul>
-							<li ng-repeat="event in orderedOwnedEvents">
+							<li ng-repeat="event in myEvents">
 							<script type="text/javascript">document.write(eventListFormat)</script>
 							<button  ng-click="open(event)" class="btn btn-default">view</button>
 							<button ng-click="remove(event.$id)" class="btn btn-warning">remove</button></li>
