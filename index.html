@@ -96,18 +96,24 @@
 				<h1>Events</h1>
 				<div class="row">
 					<div class="col-md-8">
-					<ul>
-						<li ng-repeat="event in filteredEvents">
-						<script type="text/javascript">document.write(eventListFormat)</script>
-						<div>
-						<button ng-click="open(event)" class="btn btn-default">view</button>
-						<button ng-show="authData" ng-click="join(event)" class="btn btn-primary">join</button>
-						<a class="btn btn-social-icon btn-facebook" href="" social-facebook>
-							<i class='fa fa-facebook'></i>
-						</a>
-						</div>
-						</li>
-					</ul>
+					<table class="table table-striped">
+						<tbody ng-repeat="event in filteredEvents">
+						<tr>
+							<td>
+								<script type="text/javascript">document.write(eventListFormat)</script>
+							</td>
+							<td>
+							<div class="btn-group" role="group" aria-label="">
+								<button ng-click="open(event)" class="btn btn-default">view</button>
+								<button ng-show="authData" ng-click="join(event)" class="btn btn-primary">join</button>
+								<a class="btn btn-social-icon btn-facebook" href="" social-facebook>
+									<i class='fa fa-facebook'></i>
+								</a>
+							</div>
+							</td>
+							</tr>
+						</tbody>
+					</table>
 					</div>
 				</div>
 				<script type="text/ng-template" id="viewEvent.html">
