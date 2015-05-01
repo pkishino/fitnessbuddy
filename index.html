@@ -48,9 +48,9 @@
 					<h3 class="modal-title">New Event</h3>
 				</div>
 				<div class="modal-body">
-					<input type='text' ng-model='eventname' placeholder='Event types' ng-required="true" typeahead="type.name for type in getTypes($viewValue)" typeahead-loading="loadingTypes" class="form-control"/><i ng-show="loadingTypes" class="glyphicon glyphicon-refresh"></i>
+					<input type='text' ng-model='eventname' placeholder='Event Type' ng-required="true" typeahead="type.name for type in getTypes($viewValue)" typeahead-loading="loadingTypes" class="form-control"/><i ng-show="loadingTypes" class="glyphicon glyphicon-refresh"></i>
 					<div id='searchbox_div'></div>
-					<input type="text" datepicker-popup="yyyy/MM/dd" ng-model="eventdate" min-date="minDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" placeholder="EventDate"/>
+					<input type="text" datepicker-popup="yyyy/MM/dd" ng-model="eventdate" min-date="minDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" placeholder="Event Date" class="form-control" />
 					<button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
 					<timepicker ng-model="eventtime" ng-change="changed()" hour-step="1" minute-step="10" show-meridian="false" readonly-input="true"></timepicker>
 					<ui-gmap-google-map center='map.center' zoom='map.zoom' draggable='true' options='options'>
@@ -65,32 +65,45 @@
 				</div>
 				</script>
 				<script type="text/ng-template" id='searchbox.tpl.html'>
-				<input id="pac-input" class="pac-input" type="text" ng-model="ngModel" placeholder="Event Location">
+				<input id="pac-input" class="pac-input form-control" type="text" ng-model="ngModel" placeholder="Event Location">
 				</script>
-				<div class="row">
-					<div ng-show="authData" class="col-md-4">
-						<p>Hello, {{ authData.facebook.displayName }} : {{ authData.facebook.cachedUserProfile.gender }}</p>
-						<a class='btn btn-block btn-social btn-facebook' ng-click="auth.$unauth()">
-								<i class='fa fa-facebook'></i>Logout
-						</a>
-						<button class="btn btn-primary" ng-click="open()">Add Event</button>
-					</div>
-					<div ng-show="authData" class="col-md-8">
-						My events(created or joined):
-						<ul>
-							<li ng-repeat="event in orderedOwnedEvents">
-							<script type="text/javascript">document.write(eventListFormat)</script>
-							<button  ng-click="open(event)" class="btn btn-default">view</button>
-							<button ng-click="remove(event.$id)" class="btn btn-warning">remove</button></li>
-						</ul>
-					</div>
-					<div ng-hide="authData" class="col-md-4">
+				<div class="row" ng-hide="authData">
+					<div class="col-md-4">
 						<p>Welcome. Here you can see a list will all events currently available</p>
 						<p>If you would like to add a new event or join an event, please login first</p>
 						<p>Currently only facebook is supported</p>
-							<a class='btn btn-block btn-social btn-facebook' ng-click="login()">
-								<i class='fa fa-facebook'></i>Login With Facebook
-							</a>
+						<a class='btn btn-block btn-social btn-facebook' ng-click="login()">
+							<i class='fa fa-facebook'></i>Login With Facebook
+						</a>
+					</div>
+				</div>
+				<div class="row" ng-show="authData">
+					<div class="col-md-4"
+						<p>Hello, {{ authData.facebook.displayName }} : {{ authData.facebook.cachedUserProfile.gender }}</p>
+						<a class="btn btn-block btn-primary" ng-click="open()">Add Event</a>
+						<a class='btn btn-block btn-social btn-facebook' ng-click="auth.$unauth()">
+								<i class='fa fa-facebook'></i>Logout
+						</a>
+					</div>
+				</div>
+				<div class="row" ng-show="authData">
+					<div class="col-md-8">
+					<h1>My events(created or joined):</h1>
+						<table class="table table-striped">
+							<tbody ng-repeat="event in orderedOwnedEvents">
+							<tr>
+								<td>
+									<script type="text/javascript">document.write(eventListFormat)</script>
+								</td>
+								<td>
+								<div class="btn-group" role="group" aria-label="">
+									<button ng-click="open(event)" class="btn btn-default">view</button>
+									<button ng-click="remove(event.$id)" class="btn btn-warning">remove</button>
+								</div>
+								</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 				</div>
 				<h1>Events</h1>
@@ -106,7 +119,7 @@
 							<div class="btn-group" role="group" aria-label="">
 								<button ng-click="open(event)" class="btn btn-default">view</button>
 								<button ng-show="authData" ng-click="join(event)" class="btn btn-primary">join</button>
-								<a class="btn btn-social-icon btn-facebook" href="" social-facebook>
+								<a ng-show="authData" class="btn btn-social-icon btn-facebook" href="" social-facebook>
 									<i class='fa fa-facebook'></i>
 								</a>
 							</div>
