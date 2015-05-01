@@ -23,14 +23,18 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			var query = eventRef.orderByChild('date').limitToLast(25);
 			$scope.filteredEvents = $firebaseArray(query);
 			$scope.eventlist = $firebaseArray(eventRef);
-			$scope.eventlist.$loaded(function() {
-				cull();
-			}, function(error) {
-				console.error('Error:', error);
-			});
+			// $scope.eventlist.$loaded(function() {
+			// 	cull();
+			// }, function(error) {
+			// 	console.error('Error:', error);
+			// });
 			$scope.eventlist.$watch(function(event){
 				if(event.event == "child_added"){
-					cull();	
+					cull();
+					var record = $scope.eventlist.$getRecord(event.key);
+					if ($scope.authData&&$scope.authData.uid == record.author){
+						$scope.join(record);
+					}	
 				}
 			});
 			$scope.open = function(size) {
@@ -173,7 +177,8 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 					name: $scope.eventname,
 					marker: $scope.marker,
 					date: time,
-					gender: $scope.authData.facebook.cachedUserProfile.gender
+					gender: $scope.authData.facebook.cachedUserProfile.gender,
+					author: $scope.authData.uid
 				});
 			};
 			$scope.today = function() {
