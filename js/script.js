@@ -23,17 +23,17 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			var query = eventRef.orderByChild('date').limitToLast(25);
 			$scope.filteredEvents = $firebaseArray(query);
 			$scope.eventlist = $firebaseArray(eventRef);
-			// $scope.eventlist.$loaded(function() {
-			// 	cull();
-			// }, function(error) {
-			// 	console.error('Error:', error);
-			// });
 			$scope.eventlist.$watch(function(event){
+				var record;
 				if(event.event == "child_added"){
-					cull();
-					var record = $scope.eventlist.$getRecord(event.key);
-					if ($scope.authData&&$scope.authData.uid == record.author){
+					record = $scope.eventlist.$getRecord(event.key);
+					if (record&&$scope.authData&&$scope.authData.uid == record.author){
 						$scope.join(record);
+					}
+					cull();	
+				}else if(event.event == "child_removed"){
+					if ($scope.authData){
+						$scope.remove(event.key);
 					}	
 				}
 			});
