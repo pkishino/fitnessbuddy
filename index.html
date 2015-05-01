@@ -3,6 +3,17 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<meta charset="utf-8">
+		<meta property="og:title"
+		content="Fun events to excercise" />
+		<meta property="og:site_name" content="My Fitness Buddy"/>
+		<meta property="og:url"
+		content="https://patrickziegler.se/fitnessbuddy" />
+		<meta property="og:description" content="This is just a placeholder" />
+		<meta property="fb:app_id" content="1379990932330458" />
+		<meta property="og:type" content="event" />
+		<meta property="article:author" content="https://patrickziegler.se/fitnessbuddy" />
+		<meta property="article:publisher" content="https://patrickziegler.se/fitnessbuddy" />
+		<base href="/fitnessbuddy/">
 		<title>FitnessBuddy</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -10,6 +21,8 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/4.9.0/bootstrap-social.min.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="css/style.css">
+
+
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.min.js"></script>
 		<script src='https://cdn.firebase.com/js/client/2.2.2/firebase.js'></script>
 		<script src="https://cdn.firebase.com/libs/angularfire/1.0.0/angularfire.min.js"></script>
@@ -19,6 +32,8 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/0.10.0/angular-moment.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-google-maps/2.1.0-X.10/angular-google-maps.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
+		<script src="js/angular-social-links.js"></script>
+
 		<script src="js/script.js"></script>
 	</head>
 	<body>
@@ -79,12 +94,21 @@
 					</div>
 				</div>
 				<h1>Events</h1>
-				<div class="row" ng-repeat="event in filteredEvents">
+				<div class="row">
 					<div class="col-md-8">
-					<script type="text/javascript">document.write(eventListFormat)</script>
+					<ul>
+						<li ng-repeat="event in filteredEvents">
+						<script type="text/javascript">document.write(eventListFormat)</script>
+						<div>
+						<button ng-click="open(event)" class="btn btn-default">view</button>
+						<button ng-show="authData" ng-click="join(event)" class="btn btn-primary">join</button>
+						<a class="btn btn-social-icon btn-facebook" href="" social-facebook>
+							<i class='fa fa-facebook'></i>
+						</a>
+						</div>
+						</li>
+					</ul>
 					</div>
-					<button ng-click="open(event)" class="btn btn-default">view</button>
-					<button ng-show="authData" ng-click="join(event)" class="btn btn-primary">join</button>
 				</div>
 				<script type="text/ng-template" id="viewEvent.html">
 					<div class="modal-header">
@@ -111,4 +135,5 @@
 			</div>
 		</div>
 	</body>
+	<div id="fb-root"></div>
 </html>

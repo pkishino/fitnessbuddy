@@ -1,4 +1,4 @@
-angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'uiGmapgoogle-maps'])
+angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'uiGmapgoogle-maps','socialLinks'])
 	.constant('FIREBASE_URL', 'https://sweltering-heat-7043.firebaseio.com/')
 	.factory('Auth', ['$firebaseAuth', 'FIREBASE_URL',
 		function($firebaseAuth, FIREBASE_URL) {
@@ -12,6 +12,9 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			v: '3.17',
 			libraries: 'weather,geometry,visualization,places'
 		});
+	})
+	.config(function($locationProvider){
+    	$locationProvider.html5Mode(true).hashPrefix('!');
 	})
 	.controller('EventListCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$modal', 'Auth',
 		function($scope, FIREBASE_URL, $firebaseArray, $modal, Auth) {
