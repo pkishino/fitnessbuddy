@@ -18,6 +18,7 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 	})
 	.controller('EventListCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$modal', 'Auth',
 		function($scope, FIREBASE_URL, $firebaseArray, $modal, Auth) {
+			$scope.myEvents = [];
 			var eventRef = new Firebase(FIREBASE_URL + 'events');
 			var query = eventRef.orderByChild('date').limitToLast(25);
 			$scope.filteredEvents = $firebaseArray(query);
@@ -37,7 +38,12 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 				if (size === undefined) {
 					modalInstance = $modal.open({
 						templateUrl: 'newEvent.html',
-						controller: 'NewEventModalCtrl'
+						controller: 'NewEventModalCtrl',
+						resolve: {
+							authData: function() {
+								return $scope.authData;
+							}
+						}
 					});
 				} else {
 					modalInstance = $modal.open({
@@ -68,36 +74,59 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			$scope.auth.$onAuth(function(authData) {
 				$scope.authData=authData;
 				if (authData) {
-					var ownedRef = new Firebase(FIREBASE_URL + 'users/' + authData.uid);
-					$scope.ownedEvents = $firebaseArray(ownedRef);
-					var ownQuery = ownedRef.orderByChild('date');
-					$scope.orderedOwnedEvents = $firebaseArray(ownQuery);
+					$scope.ownedRef = new Firebase(FIREBASE_URL + 'users/' + authData.uid);
+					$scope.myEventRefs = $firebaseArray($scope.ownedRef);
+					$scope.myEventRefs.$watch(function(event){
+						getMyEvents();
+					});
 				}
 			});
 			$scope.join = function(event) {
-				$scope.ownedEvents.$add(event);
+				var record = $firebaseArray($scope.ownedRef.orderByChild('event').equalTo(event.$id));
+				record.$loaded(function() {
+					if(record.length === 0){
+						$scope.myEventRefs.$add({event:event.$id});
+					}
+				}, function(error) {
+					console.error('Error:', error);
+				});
 			};
 			$scope.remove = function(id) {
-				$scope.ownedEvents.$remove($scope.ownedEvents.$getRecord(id));
+				var record = $firebaseArray($scope.ownedRef.orderByChild('event').equalTo(id));
+				record.$loaded(function() {
+					if(record.length === 1){
+						var remove = record[0];
+						$scope.myEventRefs.$remove($scope.myEventRefs.$indexFor(remove.$id));
+					}
+				}, function(error) {
+					console.error('Error:', error);
+				});
 			};
+			function getMyEvents(){
+				if($scope.authData){
+					events = [];
+					for (var i = 0; i < $scope.myEventRefs.length; i++) {
+						var eventId = $scope.myEventRefs[i].event;
+						events[events.length] = $scope.eventlist.$getRecord(eventId);
+					}
+					$scope.myEvents = events;
+				}
+			}
 			function cull(){
 				var time = new Date().getTime();
-				// console.info(time);
 				for (var i = 0; i < $scope.eventlist.length; i++) {
 					var event = $scope.eventlist[i];
-					// console.info(event.date);
-					// console.info(event.date - time);
 					if (event.date < time) {
 						var item = $scope.eventlist.$getRecord(event.$id);
-						// console.info(item.name)
 						$scope.eventlist.$remove(item);
 					}
 				}
 			}
 		}
 	])
-	.controller('NewEventModalCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$modalInstance', 'uiGmapGoogleMapApi',
-		function($scope, FIREBASE_URL, $firebaseArray, $modalInstance, uiGmapGoogleMapApi) {
+	.controller('NewEventModalCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$modalInstance', 'uiGmapGoogleMapApi','authData',
+		function($scope, FIREBASE_URL, $firebaseArray, $modalInstance, uiGmapGoogleMapApi, authData) {
+			$scope.authData = authData;
 			var eventRef = new Firebase(FIREBASE_URL + 'events');
 			$scope.eventlist = $firebaseArray(eventRef);
 			var typeRef = new Firebase(FIREBASE_URL + 'types');
@@ -140,12 +169,11 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 				correctedTime.setHours($scope.eventtime.getHours());
 				correctedTime.setMinutes($scope.eventtime.getMinutes());
 				var time = correctedTime.getTime();
-				// console.info('Now'+new Date().getTime());
-				// console.info('Corrected time'+time);
 				$scope.eventlist.$add({
 					name: $scope.eventname,
 					marker: $scope.marker,
-					date: time
+					date: time,
+					gender: $scope.authData.facebook.cachedUserProfile.gender
 				});
 			};
 			$scope.today = function() {
