@@ -115,8 +115,13 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 							$scope.myEventRefs.$remove(i);
 						}
 					}
+					events.sort(compare);
 					$scope.myEvents = events;
 				}
+			}
+			function compare(a, b) {
+				status = (a.date - b.date);
+  				return status;
 			}
 			function cull(){
 				var time = new Date().getTime();
