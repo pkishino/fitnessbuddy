@@ -31,10 +31,6 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 						$scope.join(record);
 					}
 					cull();	
-				}else if(event.event == "child_removed"){
-					if ($scope.authData){
-						$scope.remove(event.key);
-					}	
 				}
 			});
 			$scope.open = function(size) {
@@ -109,9 +105,15 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			function getMyEvents(){
 				if($scope.authData){
 					events = [];
-					for (var i = 0; i < $scope.myEventRefs.length; i++) {
-						var eventId = $scope.myEventRefs[i].event;
-						events[events.length] = $scope.eventlist.$getRecord(eventId);
+					var copy = $scope.myEventRefs;
+					for (var i = 0; i < copy.length; i++) {
+						var eventId = copy[i].event;
+						var event = $scope.eventlist.$getRecord(eventId);
+						if (event!==null){
+							events[events.length]=event;
+						}else{
+							$scope.myEventRefs.$remove(i);
+						}
 					}
 					$scope.myEvents = events;
 				}
@@ -123,6 +125,9 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 					if (event.date < time) {
 						var item = $scope.eventlist.$getRecord(event.$id);
 						$scope.eventlist.$remove(item);
+						if ($scope.authData){
+							$scope.myEventRefs.$remove(event.$id);
+						}
 					}
 				}
 			}
