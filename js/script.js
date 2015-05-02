@@ -16,8 +16,8 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 	.config(function($locationProvider){
     	$locationProvider.html5Mode(true).hashPrefix('!');
 	})
-	.controller('EventListCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$modal', 'Auth',
-		function($scope, FIREBASE_URL, $firebaseArray, $modal, Auth) {
+	.controller('EventListCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$firebaseObject', '$modal', 'Auth','$location',
+		function($scope, FIREBASE_URL, $firebaseArray, $firebaseObject, $modal, Auth, $location) {
 			$scope.myEvents = [];
 			var eventRef = new Firebase(FIREBASE_URL + 'events');
 			var query = eventRef.orderByChild('date').limitToLast(25);
@@ -102,6 +102,16 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 					console.error('Error:', error);
 				});
 			};
+			if($location.search().event!==undefined){
+				var eventId = $location.search().event;
+				var ref = new Firebase(FIREBASE_URL + 'events/' + eventId);
+				var record = $firebaseObject(ref);
+				record.$loaded(function() {
+					$scope.open(record);
+				}, function(error) {
+					console.error('Error:', error);
+				});
+			}
 			function getMyEvents(){
 				if($scope.authData){
 					events = [];
