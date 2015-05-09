@@ -16,8 +16,8 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 	.config(function($locationProvider){
     	$locationProvider.html5Mode(true).hashPrefix('!');
 	})
-	.controller('EventListCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$firebaseObject', '$modal', 'Auth','$location',
-		function($scope, FIREBASE_URL, $firebaseArray, $firebaseObject, $modal, Auth, $location) {
+	.controller('EventListCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$firebaseObject', '$modal', 'Auth','$location', '$http',
+		function($scope, FIREBASE_URL, $firebaseArray, $firebaseObject, $modal, Auth, $location, $http) {
 			$scope.myEvents = [];
 			var eventRef = new Firebase(FIREBASE_URL + 'events');
 			var query = eventRef.orderByChild('date').limitToLast(25);
@@ -107,7 +107,9 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 				var ref = new Firebase(FIREBASE_URL + 'events/' + eventId);
 				var record = $firebaseObject(ref);
 				record.$loaded(function() {
-					$scope.open(record);
+					if(record.marker!==undefined){
+						$scope.open(record);
+					}
 				}, function(error) {
 					console.error('Error:', error);
 				});
@@ -146,6 +148,30 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 					}
 				}
 			}
+			$scope.shareEvent = function (share_event) {
+				var request = $http({
+				    method: "post",
+				    url: window.location.href + "createFBEvent.php",
+				    data: {
+				        event: share_event
+				    },
+				    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+				});
+
+				/* Check whether the HTTP Request is successful or not. */
+				request.success(function (data) {
+				    console.log("Result "+data);
+				    FB.ui({
+						method: 'share_open_graph',
+						action_type: 'fitness-buddy:join',
+						action_properties: JSON.stringify({
+						  event:data
+						})
+					}, function(response){
+						console.log(response);
+					});
+				});
+			};
 		}
 	])
 	.controller('NewEventModalCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$modalInstance', 'uiGmapGoogleMapApi','authData',
