@@ -78,7 +78,7 @@
 				</div>
 				<div class="row" ng-show="authData">
 					<div class="col-md-4"
-						<p>Hello, {{ authData.facebook.displayName }} : {{ authData.facebook.cachedUserProfile.gender }}</p>
+						<p>Hello, {{ authData.facebook.displayName }} : {{ authData.facebook.cachedUserProfile.gender }} : {{authData.facebook.cachedUserProfile.birthday}}</p>
 						<a class="btn btn-block btn-primary" ng-click="open()">Add Event</a>
 						<a class='btn btn-block btn-social btn-facebook' ng-click="auth.unauth()">
 							<i class='fa fa-facebook'></i>Logout

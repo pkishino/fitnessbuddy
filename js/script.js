@@ -22,6 +22,7 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 		$facebookProvider.setCustomInit({
 			xfbml      : true
 		});
+		$facebookProvider.setPermissions("user_birthday");
 	})
 	.run(function($rootScope){
 		  (function(d, s, id) {
@@ -77,7 +78,8 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			};
 			$scope.auth = Auth;
 			$scope.login = function() {
-				$scope.auth.authWithOAuthPopup("facebook", function(error, authData) { 
+				var token= $facebook.getAuthResponse().accessToken;
+				$scope.auth.authWithOAuthToken("facebook",token ,function(error, authData) { 
 					$scope.authData=authData;
 					}, {
 				  scope: "user_birthday"
