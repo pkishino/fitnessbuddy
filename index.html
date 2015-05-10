@@ -136,6 +136,7 @@
 								<input type='text' value = '{{ event.name }}' readonly/>
 								<input type='text' value = '{{ event.marker.name }}' readonly/>
 								<input type="text" value = "{{ event.date | amDateFormat:'DD/MM/YYYY' }} @ {{ event.date | amDateFormat:'HH:mm'}}" readonly/>
+								<input type="text" value = "{{ event.gender}}" readonly/>
 								<ui-gmap-google-map center='map.center' zoom='map.zoom' draggable='true' options='options'>
 								<ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">
 								</ui-gmap-google-map>

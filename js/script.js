@@ -176,7 +176,6 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 
 				/* Check whether the HTTP Request is successful or not. */
 				request.success(function (data) {
-				    console.log("Result "+data);
 				    if (!isNaN(data)){
 						$facebook.ui({
 							method: 'share_open_graph',
