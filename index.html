@@ -8,7 +8,7 @@
 		<meta property="og:site_name" content="My Fitness Buddy"/>
 		<meta property="og:url"
 		content="https://patrickziegler.se/fitnessbuddy/" />
-		<meta property="og:image"　content="https://commons.wikimedia.org/wiki/File%3AFitnessbuddy_logo.png" />
+		<meta property="og:image"　content="https://patrickziegler.se/fitnessbuddy/images/Fitnessbuddy_logo.png" />
 		<meta property="og:description" content="Join me @ fitnessbuddy!" />
 		<meta property="fb:app_id" content="1379990932330458" />
 		<meta property="og:type" content="fitness-buddy:event" />
@@ -32,7 +32,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/0.10.0/angular-moment.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-google-maps/2.1.0-X.10/angular-google-maps.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
-		<script src="js/angular-social-links.js"></script>
+		<script src="js/ngFacebook.js"></script>
 		<script src="js/script.js"></script>
 	</head>
 	<body>
@@ -159,22 +159,5 @@
 			</div>
 		</div>
 		<div id="fb-root"></div>
-		<script>
-			window.fbAsyncInit = function() {
-				FB.init({
-				appId      : '1379990932330458',
-				xfbml      : true,
-				version    : 'v2.3'
-				});
-			};
-
-			(function(d, s, id){
-				var js, fjs = d.getElementsByTagName(s)[0];
-				if (d.getElementById(id)) {return;}
-				js = d.createElement(s); js.id = id;
-				js.src = "//connect.facebook.net/en_US/sdk.js";
-				fjs.parentNode.insertBefore(js, fjs);
-			}(document, 'script', 'facebook-jssdk'));
-		</script>
 	</body>
 </html>

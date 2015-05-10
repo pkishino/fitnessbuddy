@@ -1,4 +1,4 @@
-angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'uiGmapgoogle-maps','socialLinks'])
+angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'uiGmapgoogle-maps','ngFacebook'])
 	.constant('FIREBASE_URL', 'https://sweltering-heat-7043.firebaseio.com/')
 	.factory('Auth', ['$firebaseAuth', 'FIREBASE_URL',
 		function($firebaseAuth, FIREBASE_URL) {
@@ -16,8 +16,24 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 	.config(function($locationProvider){
     	$locationProvider.html5Mode(true).hashPrefix('!');
 	})
-	.controller('EventListCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$firebaseObject', '$modal', 'Auth','$location', '$http',
-		function($scope, FIREBASE_URL, $firebaseArray, $firebaseObject, $modal, Auth, $location, $http) {
+	.config(function($facebookProvider) {
+		$facebookProvider.setAppId('1379990932330458');
+		$facebookProvider.setVersion("v2.3");
+		$facebookProvider.setCustomInit({
+			xfbml      : true
+		});
+	})
+	.run(function($rootScope){
+		  (function(d, s, id) {
+		    var js, fjs = d.getElementsByTagName(s)[0];
+		    if (d.getElementById(id)) return;
+		    js = d.createElement(s); js.id = id;
+		    js.src = "//connect.facebook.net/en_US/sdk.js";
+		    fjs.parentNode.insertBefore(js, fjs);
+		  }(document, 'script', 'facebook-jssdk'));
+	})
+	.controller('EventListCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$firebaseObject', '$modal', 'Auth','$location', '$http', '$facebook',
+		function($scope, FIREBASE_URL, $firebaseArray, $firebaseObject, $modal, Auth, $location, $http, $facebook) {
 			$scope.myEvents = [];
 			var eventRef = new Firebase(FIREBASE_URL + 'events');
 			var query = eventRef.orderByChild('date').limitToLast(25);
@@ -161,15 +177,22 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 				/* Check whether the HTTP Request is successful or not. */
 				request.success(function (data) {
 				    console.log("Result "+data);
-				    FB.ui({
-						method: 'share_open_graph',
-						action_type: 'fitness-buddy:join',
-						action_properties: JSON.stringify({
-						  event:data
-						})
-					}, function(response){
-						console.log(response);
-					});
+				    if (!isNaN(data)){
+						$facebook.ui({
+							method: 'share_open_graph',
+							action_type: 'fitness-buddy:join',
+							action_properties: JSON.stringify({
+							  event:data,
+							})
+						}).then(
+							function(response){
+								console.log(response);
+							},
+							function(err){
+								console.log(err);
+							}
+						);
+					}
 				});
 			};
 		}
