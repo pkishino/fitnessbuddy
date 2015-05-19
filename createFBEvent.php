@@ -11,6 +11,7 @@
     if(!is_null($event)){
     	$time = $event->date/1000;
 	    $dt = new DateTime("@$time");
+	    $dt->setTimezone(new DateTimeZone('Europe/Stockholm'));
 	    $id = $event->{'$id'};
 		$request = new FacebookRequest(  
 		$session,  
@@ -22,7 +23,7 @@
 		        'app_id' => '1379990932330458',
 	            'url' => "https://patrickziegler.se/fitnessbuddy/?event=$id",
 	            'title' => $event->name,
-	            'image' => 'https://patrickziegler.se/fitnessbuddy/images/Fitnessbuddy_logo.png',
+	            'image' => 'https://patrickziegler.se/fitnessbuddy/images/Fitnessbuddy_logo2.png',
 	            'description' => $dt->format('Y-m-d H:i:s') . '@' .$event->marker->name
 		        ))
 		)
