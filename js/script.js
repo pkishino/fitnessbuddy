@@ -170,6 +170,15 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 					}
 				}
 			}
+			$scope.alreadyJoined = function (event) {
+				var exists = false;
+				for (var i = 0; i < $scope.myEvents.length; i++) {
+					if ($scope.myEvents[i].$id == event.$id){
+						exists = true;
+					}
+				};				
+				return exists;
+			}
 			$scope.shareEvent = function (share_event) {
 				var request = $http({
 				    method: "post",

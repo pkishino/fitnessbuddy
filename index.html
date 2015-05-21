@@ -117,7 +117,7 @@
 									<td>
 										<div class="btn-group" role="group" aria-label="">
 											<button ng-click="open(event)" class="btn btn-default">view</button>
-											<button ng-show="authData" ng-click="join(event)" class="btn btn-primary">join</button>
+											<button ng-show="authData && !alreadyJoined(event)" ng-click="join(event)" class="btn btn-primary">join</button>
 											<button ng-show="authData" class="btn btn-social-icon btn-facebook" ng-click="shareEvent(event)">
 												<i class='fa fa-facebook'></i>
 											</button>
