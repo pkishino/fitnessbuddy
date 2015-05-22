@@ -1,4 +1,4 @@
-angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'uiGmapgoogle-maps','ngFacebook'])
+angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'uiGmapgoogle-maps', 'ngFacebook', 'atomic-notify'])
 	.constant('FIREBASE_URL', 'https://sweltering-heat-7043.firebaseio.com/')
 	.factory('Auth', ['FIREBASE_URL',
 		function(FIREBASE_URL) {
@@ -13,41 +13,50 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			libraries: 'weather,geometry,visualization,places'
 		});
 	})
-	.config(function($locationProvider){
-    	$locationProvider.html5Mode(true).hashPrefix('!');
+	.config(function($locationProvider) {
+		$locationProvider.html5Mode(true).hashPrefix('!');
 	})
 	.config(function($facebookProvider) {
 		$facebookProvider.setAppId('1379990932330458');
 		$facebookProvider.setVersion("v2.3");
 		$facebookProvider.setCustomInit({
-			xfbml      : true
+			xfbml: true
 		});
-		$facebookProvider.setPermissions("user_birthday");
+		// $facebookProvider.setPermissions("user_birthday");
 	})
-	.run(function($rootScope){
-		  (function(d, s, id) {
-		    var js, fjs = d.getElementsByTagName(s)[0];
-		    if (d.getElementById(id)) return;
-		    js = d.createElement(s); js.id = id;
-		    js.src = "//connect.facebook.net/en_US/sdk.js";
-		    fjs.parentNode.insertBefore(js, fjs);
-		  }(document, 'script', 'facebook-jssdk'));
+	.config(['atomicNotifyProvider', function(atomicNotifyProvider) {
+
+		atomicNotifyProvider.setDefaultDelay(5000);
+		atomicNotifyProvider.useIconOnNotification(true);
+	}])
+	.run(function($rootScope) {
+		(function(d, s, id) {
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) return;
+			js = d.createElement(s);
+			js.id = id;
+			js.src = "//connect.facebook.net/en_US/sdk.js";
+			fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
 	})
-	.controller('EventListCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$firebaseObject', '$modal', 'Auth','$location', '$http', '$facebook',
-		function($scope, FIREBASE_URL, $firebaseArray, $firebaseObject, $modal, Auth, $location, $http, $facebook) {
+	.controller('EventListCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$firebaseObject', '$modal', 'Auth', '$location', '$http', '$facebook', 'atomicNotifyService',
+		function($scope, FIREBASE_URL, $firebaseArray, $firebaseObject, $modal, Auth, $location, $http, $facebook, atomicNotifyService) {
 			$scope.myEvents = [];
 			var eventRef = new Firebase(FIREBASE_URL + 'events');
 			var query = eventRef.orderByChild('date').limitToLast(25);
 			$scope.filteredEvents = $firebaseArray(query);
 			$scope.eventlist = $firebaseArray(eventRef);
-			$scope.eventlist.$watch(function(event){
+			$scope.eventlist.$watch(function(event) {
 				var record;
-				if(event.event == "child_added"){
+				if (event.event == "child_added") {
 					record = $scope.eventlist.$getRecord(event.key);
-					if (record&&$scope.authData&&$scope.authData.uid == record.author){
+					if (record && $scope.authData && $scope.authData.uid == record.author) {
 						$scope.join(record);
 					}
-					cull();	
+					cull();
+				} else if (event.event == "child_changed") {
+					record = $scope.eventlist.$getRecord(event.key);
+					checkMembers(record);
 				}
 			});
 			$scope.open = function(size) {
@@ -74,23 +83,22 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 						}
 					});
 				}
-
 			};
 			$scope.auth = Auth;
 			$scope.login = function() {
-				var token= $facebook.getAuthResponse().accessToken;
-				$scope.auth.authWithOAuthToken("facebook",token ,function(error, authData) { 
-					$scope.authData=authData;
-					}, {
-				  scope: "user_birthday"
+				var token = $facebook.getAuthResponse().accessToken;
+				$scope.auth.authWithOAuthToken("facebook", token, function(error, authData) {
+					$scope.authData = authData;
+				}, {
+					scope: "user_birthday"
 				});
 			};
 			$scope.auth.onAuth(function(authData) {
-				$scope.authData=authData;
+				$scope.authData = authData;
 				if (authData) {
 					$scope.ownedRef = new Firebase(FIREBASE_URL + 'users/' + authData.uid);
 					$scope.myEventRefs = $firebaseArray($scope.ownedRef);
-					$scope.myEventRefs.$watch(function(event){
+					$scope.myEventRefs.$watch(function(event) {
 						getMyEvents();
 					});
 				}
@@ -98,11 +106,14 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			$scope.join = function(event) {
 				var record = $firebaseArray($scope.ownedRef.orderByChild('event').equalTo(event.$id));
 				record.$loaded(function() {
-					if(record.length === 0){
-						event=$scope.eventlist.$getRecord(event.$id);
-						event.count+=1;
-						$scope.eventlist.$save(event).then(function(ref){
-							$scope.myEventRefs.$add({event:event.$id});	
+					if (record.length === 0) {
+						event = $scope.eventlist.$getRecord(event.$id);
+						event.count += 1;
+						$scope.eventlist.$save(event).then(function(ref) {
+							$scope.myEventRefs.$add({
+								event: event.$id,
+								members: event.count
+							});
 						});
 					}
 				}, function(error) {
@@ -112,11 +123,11 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			$scope.remove = function(id) {
 				var record = $firebaseArray($scope.ownedRef.orderByChild('event').equalTo(id));
 				record.$loaded(function() {
-					if(record.length === 1){
+					if (record.length === 1) {
 						var remove = record[0];
-						event=$scope.eventlist.$getRecord(id);
-						event.count-=1;
-						$scope.eventlist.$save(event).then(function(ref){
+						event = $scope.eventlist.$getRecord(id);
+						event.count -= 1;
+						$scope.eventlist.$save(event).then(function(ref) {
 							$scope.myEventRefs.$remove($scope.myEventRefs.$indexFor(remove.$id));
 						});
 					}
@@ -124,28 +135,29 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 					console.error('Error:', error);
 				});
 			};
-			if($location.search().event!==undefined){
+			if ($location.search().event !== undefined) {
 				var eventId = $location.search().event;
 				var ref = new Firebase(FIREBASE_URL + 'events/' + eventId);
 				var record = $firebaseObject(ref);
 				record.$loaded(function() {
-					if(record.marker!==undefined){
+					if (record.marker !== undefined) {
 						$scope.open(record);
 					}
 				}, function(error) {
 					console.error('Error:', error);
 				});
 			}
-			function getMyEvents(){
-				if($scope.authData){
+
+			function getMyEvents() {
+				if ($scope.authData) {
 					events = [];
 					var copy = $scope.myEventRefs;
 					for (var i = 0; i < copy.length; i++) {
 						var eventId = copy[i].event;
 						var event = $scope.eventlist.$getRecord(eventId);
-						if (event!==null){
-							events[events.length]=event;
-						}else{
+						if (event !== null) {
+							events[events.length] = event;
+						} else {
 							$scope.myEventRefs.$remove(i);
 						}
 					}
@@ -153,56 +165,78 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 					$scope.myEvents = events;
 				}
 			}
+
+			function checkMembers(event) {
+				var record = $firebaseArray($scope.ownedRef.orderByChild('event').equalTo(event.$id));
+				record.$loaded(function() {
+					if (record.length == 1) {
+						var diff = event.count - record[0].members;
+						if (diff > 0) {
+							var string='Yay,' + diff + ' more person' + (diff > 1 ? 's' : '') + ' joined ' + event.name + '@' + new Date(event.date);
+							atomicNotifyService.info(string);
+						} else if (diff < 0) {
+							var string='Oh No,' + diff + ' person' + (diff < -1 ? 's' : '') + ' left ' + event.name + '@' + new Date(event.date)
+							atomicNotifyService.warning();
+						}
+						record[0].members=event.count;
+						record.$save(0);
+					}
+				});
+			}
+
 			function compare(a, b) {
 				status = (a.date - b.date);
-  				return status;
+				return status;
 			}
-			function cull(){
+
+			function cull() {
 				var time = new Date().getTime();
 				for (var i = 0; i < $scope.eventlist.length; i++) {
 					var event = $scope.eventlist[i];
 					if (event.date < time) {
 						var item = $scope.eventlist.$getRecord(event.$id);
 						$scope.eventlist.$remove(item);
-						if ($scope.authData){
+						if ($scope.authData) {
 							$scope.myEventRefs.$remove(event.$id);
 						}
 					}
 				}
 			}
-			$scope.alreadyJoined = function (event) {
+			$scope.alreadyJoined = function(event) {
 				var exists = false;
 				for (var i = 0; i < $scope.myEvents.length; i++) {
-					if ($scope.myEvents[i].$id == event.$id){
+					if ($scope.myEvents[i].$id == event.$id) {
 						exists = true;
 					}
-				};				
+				}
 				return exists;
-			}
-			$scope.shareEvent = function (share_event) {
+			};
+			$scope.shareEvent = function(share_event) {
 				var request = $http({
-				    method: "post",
-				    url: window.location.href + "createFBEvent.php",
-				    data: {
-				        event: share_event
-				    },
-				    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+					method: "post",
+					url: window.location.href + "createFBEvent.php",
+					data: {
+						event: share_event
+					},
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded'
+					}
 				});
 
 				/* Check whether the HTTP Request is successful or not. */
-				request.success(function (data) {
-				    if (!isNaN(data)){
+				request.success(function(data) {
+					if (!isNaN(data)) {
 						$facebook.ui({
 							method: 'share_open_graph',
 							action_type: 'fitness-buddy:join',
 							action_properties: JSON.stringify({
-							  event:data,
+								event: data,
 							})
 						}).then(
-							function(response){
+							function(response) {
 								console.log(response);
 							},
-							function(err){
+							function(err) {
 								console.log(err);
 							}
 						);
@@ -211,7 +245,7 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 			};
 		}
 	])
-	.controller('NewEventModalCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$modalInstance', 'uiGmapGoogleMapApi','authData',
+	.controller('NewEventModalCtrl', ['$scope', 'FIREBASE_URL', '$firebaseArray', '$modalInstance', 'uiGmapGoogleMapApi', 'authData',
 		function($scope, FIREBASE_URL, $firebaseArray, $modalInstance, uiGmapGoogleMapApi, authData) {
 			$scope.authData = authData;
 			var eventRef = new Firebase(FIREBASE_URL + 'events');
