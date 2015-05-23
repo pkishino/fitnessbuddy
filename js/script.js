@@ -175,8 +175,8 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 							var string='Yay,' + diff + ' more person' + (diff > 1 ? 's' : '') + ' joined ' + event.name + '@' + new Date(event.date);
 							atomicNotifyService.info(string);
 						} else if (diff < 0) {
-							var string='Oh No,' + diff + ' person' + (diff < -1 ? 's' : '') + ' left ' + event.name + '@' + new Date(event.date)
-							atomicNotifyService.warning();
+							var string='Oh No,' + diff*-1 + ' person' + (diff < -1 ? 's' : '') + ' left ' + event.name + '@' + new Date(event.date)
+							atomicNotifyService.warning(string);
 						}
 						record[0].members=event.count;
 						record.$save(0);
