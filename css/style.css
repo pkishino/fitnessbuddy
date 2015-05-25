@@ -1,15 +1,28 @@
-.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
-.angular-google-map-container { height: 200px; }
-#pac-input {
-  text-overflow: ellipsis;
+.nav,
+.pagination,
+.carousel,
+.panel-title a {
+    cursor: pointer;
+}
+body{
+	overflow-x:hidden
+}
+.container-fluid {
+	padding: 0;
+	padding-left: 0;
+	padding-right: 0;
+	margin-left: 0;
+	margin-right: 0;
+}
+.angular-google-map-container {
+    height: 200px;
 }
 
-#pac-input:focus {
-  /*border-color: #4d90fe;*/
+.pac-input {
+    text-overflow: ellipsis;
 }
 
 .pac-container {
-  font-family: 'Open Sans', sans-serif;
-  z-index: 10000 !important;
-  /*display: block !important;*/
+    font-family: 'Open Sans', sans-serif;
+    z-index: 10000;
 }

@@ -1,5 +1,5 @@
-angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'uiGmapgoogle-maps', 'ngFacebook', 'atomic-notify'])
-	.constant('FIREBASE_URL', 'https://sweltering-heat-7043.firebaseio.com/')
+angular.module('fitnessBuddyApp', ['firebase', 'ui.bootstrap', 'angularMoment', 'uiGmapgoogle-maps', 'ngFacebook', 'atomic-notify'])
+	.constant('FIREBASE_URL', 'https://fitnessbuddy.firebaseio.com/')
 	.factory('Auth', ['FIREBASE_URL',
 		function(FIREBASE_URL) {
 			var ref = new Firebase(FIREBASE_URL);
@@ -54,7 +54,7 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 						$scope.join(record);
 					}
 					cull();
-				} else if (event.event == "child_changed") {
+				} else if (event.event == "child_changed" && $scope.authData) {
 					record = $scope.eventlist.$getRecord(event.key);
 					checkMembers(record);
 				}
@@ -171,11 +171,12 @@ angular.module('fitnessBuddy', ['firebase', 'ui.bootstrap', 'angularMoment', 'ui
 				record.$loaded(function() {
 					if (record.length == 1) {
 						var diff = event.count - record[0].members;
+						var string;
 						if (diff > 0) {
-							var string='Yay,' + diff + ' more person' + (diff > 1 ? 's' : '') + ' joined ' + event.name + '@' + new Date(event.date);
+							string='Yay,' + diff + ' more person' + (diff > 1 ? 's' : '') + ' joined ' + event.name + ' @ ' + new Date(event.date);
 							atomicNotifyService.info(string);
 						} else if (diff < 0) {
-							var string='Oh No,' + diff*-1 + ' person' + (diff < -1 ? 's' : '') + ' left ' + event.name + '@' + new Date(event.date)
+							string='Oh No,' + diff*-1 + ' person' + (diff < -1 ? 's' : '') + ' left ' + event.name + ' @ ' + new Date(event.date);
 							atomicNotifyService.warning(string);
 						}
 						record[0].members=event.count;
