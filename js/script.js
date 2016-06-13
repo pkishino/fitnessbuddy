@@ -86,13 +86,23 @@ angular.module('fitnessBuddyApp', ['firebase', 'ui.bootstrap', 'angularMoment', 
 			};
 			$scope.auth = Auth;
 			$scope.login = function() {
+				if (!$facebook.isConnected()){
+					$facebook.login().then(function(){
+						fbauth();
+					});
+				}else{
+					fbauth();
+				}
+				
+			};
+			function fbauth(){
 				var token = $facebook.getAuthResponse().accessToken;
 				$scope.auth.authWithOAuthToken("facebook", token, function(error, authData) {
 					$scope.authData = authData;
 				}, {
-					scope: "user_birthday"
+					// scope: "user_birthday"
 				});
-			};
+			}
 			$scope.auth.onAuth(function(authData) {
 				$scope.authData = authData;
 				if (authData) {
